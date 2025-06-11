@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de Personagem - Draemora RPG</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+   <!-- Fontes do Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Uncial+Antiqua&display=swap" rel="stylesheet">
+    
+   <!-- Font Awesome (Ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Biblioteca html2pdf para exportar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        /* Estilos customizados e fontes */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0a0a0a; /* Azul escuro */
+            color: #E0E1DD; /* Quase branco */
+        }
+        .font-runic {
+            font-family: 'Uncial Antiqua', cursive;
+        }
+        .card {
+            background-color: rgba(27, 38, 59, 0.8); /* Azul um pouco mais claro */
+            border: 1px solid #415A77; /* Azul médio */
+            border-radius: 0.75rem;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        .input-base, .select-base, .textarea-base {
+            background-color: #1B263B; /* Azul mais escuro para inputs */
+            border: 1px solid #415A77;
+            color: #E0E1DD;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .input-base:focus, .select-base:focus, .textarea-base:focus {
+            outline: none;
+            border-color: #FFC300; /* Amarelo para foco */
+            box-shadow: 0 0 0 3px rgba(255, 195, 0, 0.3);
+        }
+        .btn-primary {
+            background-color: #0077B6; /* Azul primário */
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0096C7;
+        }
+        .btn-secondary {
+            background-color: #FFB703; /* Amarelo secundário */
+            color: #1B263B;
+            transition: background-color 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #FFC300;
+        }
+        .btn-danger {
+            background-color: #b71c1c;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 140px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -70px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        .parchment-box {
+            background-color: #fdf5e6;
+            color: #5a4a3a;
+            border: 2px solid #c8b79b;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+            font-family: 'Georgia', serif;
+            min-height: 100px;
+        }
+        .choice-box {
+            background-color: rgba(65, 90, 119, 0.8);
+            border: 1px solid #778DA9;
+        }
+        .choice-box input:disabled + label {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .state-inteira, .state-inteiro { color: #86efac; }
+        .state-danificada, .state-danificado { color: #facc15; }
+        .state-quebrada, .state-quebrado { color: #f87171; }
+        
+        /* Animação de dados */
+        .dice-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7); display: flex;
+            justify-content: center; align-items: center; z-index: 100;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s;
+        }
+        .dice-overlay.show {
+            opacity: 1; visibility: visible;
+        }
+        .dice {
+            font-size: 5rem; color: white; margin: 0 1rem;
+            animation: roll 1s ease-out;
+        }
+        @keyframes roll {
+            0% { transform: rotate(0deg) scale(0.5); }
+            100% { transform: rotate(720deg) scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 p-4 md:p-8 relative" data-life-rolled="false">
+
+    <div id="character-sheet" class="max-w-7xl mx-auto space-y-6">
+
+        <!-- CABEÇALHO -->
+        <header class="card p-4 flex flex-col md:flex-row items-start gap-6">
+            <div class="relative group flex-shrink-0">
+                <input type="file" id="avatar-upload" class="hidden" accept="image/*">
+<img id="avatar-preview" src="https://placehold.co/128x192/0D1B2A/E0E1DD?text=Avatar" alt="Avatar do Personagem" class="w-32 h-48 object-cover border-4 border-yellow-500 cursor-pointer group-hover:border-yellow-300 transition-all duration-300 rounded-lg">
+                <div class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer" onclick="document.getElementById('avatar-upload').click();">
+                    <i class="fas fa-camera text-2xl"></i>
+                </div>
+            </div>
+            <div class="flex-1 w-full">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-3">
+                        <label for="char-name" class="font-runic text-lg text-yellow-400">Nome do Personagem</label>
+                        <input type="text" id="char-name" class="input-base w-full p-2 text-2xl" placeholder="Nome do Personagem">
+                    </div>
+                    <div>
+                        <label for="char-class" class="font-runic text-yellow-400">Classe</label>
+                        <select id="char-class" class="select-base w-full p-2">
+                            <!-- Opções de Classe inseridas via JS -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="char-race" class="font-runic text-yellow-400">Raça</label>
+                        <select id="char-race" class="select-base w-full p-2">
+                            <!-- Opções de Raça inseridas via JS -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="char-devotion" class="font-runic text-yellow-400">Devoção</label>
+                        <input type="text" id="char-devotion" class="input-base w-full p-2" placeholder="Devoção">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div id="class-description-container" class="hidden">
+                        <!-- Descrição da classe será inserida aqui -->
+                    </div>
+                    <div id="race-description-container" class="hidden">
+                        <!-- Descrição da raça será inserida aqui -->
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- CORPO PRINCIPAL -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- COLUNA ESQUERDA -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- ATRIBUTOS E STATUS -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- ATRIBUTOS -->
+                    <div class="card p-4">
+                        <h2 class="font-runic text-2xl text-center text-yellow-400 mb-4">Atributos</h2>
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div class="flex flex-col items-center">
+                                <label for="attr-cor" class="font-runic text-lg">COR</label>
+                                <input type="number" id="attr-cor" class="input-base w-20 p-2 text-2xl text-center" value="0">
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <label for="attr-for" class="font-runic text-lg">FOR</label>
+                                <input type="number" id="attr-for" class="input-base w-20 p-2 text-2xl text-center" value="0">
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <label for="attr-des" class="font-runic text-lg">DES</label>
+                                <input type="number" id="attr-des" class="input-base w-20 p-2 text-2xl text-center" value="0">
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <label for="attr-men" class="font-runic text-lg">MEN</label>
+                                <input type="number" id="attr-men" class="input-base w-20 p-2 text-2xl text-center" value="0">
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <label for="attr-alm" class="font-runic text-lg">ALM</label>
+                                <input type="number" id="attr-alm" class="input-base w-20 p-2 text-2xl text-center" value="0">
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <label for="attr-car" class="font-runic text-lg">CAR</label>
+                                <input type="number" id="attr-car" class="input-base w-20 p-2 text-2xl text-center" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- STATUS BASE -->
+                    <div class="card p-4">
+                        <h2 class="font-runic text-2xl text-center text-yellow-400 mb-4">Status</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-red-900/50 p-3 rounded-lg text-center">
+                                <label for="status-vida" class="font-runic text-lg text-red-300">Vida</label>
+                                <input type="number" id="status-vida" class="input-base w-full p-2 text-2xl text-center" value="0">
+                            </div>
+                            <div class="bg-blue-900/50 p-3 rounded-lg text-center">
+                                <label for="status-def" class="font-runic text-lg text-blue-300">DEF</label>
+                                <input type="number" id="status-def" class="input-base w-full p-2 text-2xl text-center" value="0">
+                            </div>
+                            <div class="bg-green-900/50 p-3 rounded-lg text-center">
+                                <label for="status-rf" class="font-runic text-lg text-green-300">R.F</label>
+                                <input type="number" id="status-rf" class="input-base w-full p-2 text-2xl text-center" value="0">
+                            </div>
+                            <div class="bg-purple-900/50 p-3 rounded-lg text-center">
+                                <label for="status-rm" class="font-runic text-lg text-purple-300">R.M</label>
+                                <input type="number" id="status-rm" class="input-base w-full p-2 text-2xl text-center" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- BOTÃO DE ROLAGEM DE VIDA -->
+                <div id="life-roll-container" class="hidden card p-4 text-center">
+                    <button id="roll-life-btn" class="btn-secondary font-bold text-lg py-3 px-6 rounded-lg w-full">🎲 Rolar Vida</button>
+                    <div id="life-roll-result" class="mt-4 text-white"></div>
+                </div>
+
+                <!-- CONTAINER GENÉRICO PARA ESCOLHAS DE RAÇA -->
+                <div id="race-choices-container" class="hidden card p-4 space-y-4">
+                    <!-- Conteúdo dinâmico será injetado aqui -->
+                </div>
+
+                <!-- PERÍCIAS -->
+                <div class="card p-4">
+                    <h2 class="font-runic text-2xl text-yellow-400 mb-4">Perícias</h2>
+                    <div id="skills-list" class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3">
+                        <!-- Perícias serão inseridas aqui via JS -->
+                    </div>
+                </div>
+
+                <!-- ÁPICES -->
+                <div class="card p-4">
+                    <h2 class="font-runic text-2xl text-yellow-400 mb-4">Ápices</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h3 class="font-runic text-xl text-yellow-300 mb-2">Ápice de Raça</h3>
+                            <div id="race-apexes" class="space-y-2"></div>
+                        </div>
+                        <div>
+                            <h3 class="font-runic text-xl text-yellow-300 mb-2">Ápice de Classe</h3>
+                            <div id="class-apexes" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARACTERÍSTICAS E HISTÓRICO -->
+                 <div class="card p-4">
+                    <h2 class="font-runic text-2xl text-yellow-400 mb-4">Características e Histórico</h2>
+                    <div class="space-y-4">
+                        <textarea id="char-race-features" class="textarea-base w-full p-2 h-24" placeholder="Características de Raça..."></textarea>
+                        <textarea id="char-class-features" class="textarea-base w-full p-2 h-24" placeholder="Características de Classe..."></textarea>
+                        <textarea id="char-talents" class="textarea-base w-full p-2 h-24" placeholder="Talentos e Máculas de Raça..."></textarea>
+                        <textarea id="char-apex-text" class="textarea-base w-full p-2 h-24" placeholder="Texto do Ápice de Classe..."></textarea>
+                    </div>
+                </div>
+
+                 <!-- ESTÁGIOS AVANÇADOS -->
+                <div class="card p-4">
+                    <h2 class="font-runic text-2xl text-yellow-400 mb-4">Estágios Avançados</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-runic text-xl text-yellow-300">Estágio 2 – Subclasse</h3>
+                            <input type="text" id="stage2-name" class="input-base w-full p-2 mb-1" placeholder="Nome da Subclasse">
+                            <textarea id="stage2-benefit" class="textarea-base w-full p-2 h-20" placeholder="Benefício..."></textarea>
+                        </div>
+                        <div>
+                            <h3 class="font-runic text-xl text-yellow-300">Estágio 3 – Herança</h3>
+                            <input type="text" id="stage3-name" class="input-base w-full p-2 mb-1" placeholder="Nome da Herança">
+                            <textarea id="stage3-ability" class="textarea-base w-full p-2 h-20" placeholder="Habilidade Lendária..."></textarea>
+                        </div>
+                        <div>
+                            <h3 class="font-runic text-xl text-yellow-300">Estágio 4 – Ascensão</h3>
+                            <input type="text" id="stage4-name" class="input-base w-full p-2 mb-1" placeholder="Nome da Habilidade">
+                            <textarea id="stage4-effect" class="textarea-base w-full p-2 h-20" placeholder="Efeito..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUNA DIREITA -->
+            <div class="space-y-6">
+                
+                <!-- DRACMAS E UTILIDADES -->
+                <div class="card p-4">
+                    <h2 class="font-runic text-2xl text-yellow-400 mb-4">Recursos</h2>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <!-- Dracmas -->
+                        <div class="flex items-center gap-2">
+                            <label for="dracma-b" class="font-bold text-lg" style="color: #cd7f32;">D$B</label>
+                            <input type="number" id="dracma-b" class="input-base w-full p-1 text-center" value="1">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label for="dracma-p" class="font-bold text-lg" style="color: #c0c0c0;">D$P</label>
+                            <input type="number" id="dracma-p" class="input-base w-full p-1 text-center" value="1">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label for="dracma-o" class="font-bold text-lg" style="color: #ffd700;">D$O</label>
+                            <input type="number" id="dracma-o" class="input-base w-full p-1 text-center" value="1">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label for="dracma-d" class="font-bold text-lg" style="color: #e02c2c;">D$D</label>
+                            <input type="number" id="dracma-d" class="input-base w-full p-1 text-center" value="1">
+                        </div>
+                    </div>
+                    <div id="dracma-details" class="text-xs space-y-1 bg-gray-900/50 p-2 rounded-lg"></div>
+                    <div class="col-span-2 space-y-2 mt-4">
+                        <select id="armor-type" class="select-base w-full p-2">
+                            <option value="nenhuma">Sem Armadura</option>
+                            <option value="leve">Leve</option>
+                            <option value="media">Média</option>
+                            <option value="pesada">Pesada</option>
+                        </select>
+                        <div id="armor-status-display" class="text-sm mt-1 text-center"></div>
+                    </div>
+                     <div class="col-span-2 space-y-2 mt-2">
+                        <select id="shield-type" class="select-base w-full p-2">
+                             <option value="nenhum">Sem Escudo</option>
+                             <option value="pequeno">Pequeno</option>
+                             <option value="grande">Grande</option>
+                        </select>
+                         <div id="shield-status-display" class="text-sm mt-1 text-center"></div>
+                    </div>
+                    <div class="col-span-2 flex items-center gap-2 bg-black/30 p-2 rounded-lg mt-4">
+                         <label for="deaths" class="font-runic text-lg text-red-400">Mortes Eminentes</label>
+                         <input type="number" id="deaths" class="input-base w-full p-1 text-center" value="0">
+                    </div>
+                </div>
+
+                <!-- INVENTÁRIO -->
+                <div class="card p-4">
+                    <h2 class="font-runic text-2xl text-yellow-400 mb-4">Inventário</h2>
+                    <div id="inventory-list" class="space-y-2 max-h-96 overflow-y-auto pr-2">
+                        <!-- Itens do inventário -->
+                    </div>
+                    <button id="add-inventory-item" class="btn-primary w-full mt-4 p-2 rounded-lg"><i class="fas fa-plus mr-2"></i>Adicionar Item</button>
+                </div>
+
+                <!-- CONTROLE DE RUNAS -->
+                <div class="card p-4">
+                    <h2 class="font-runic text-2xl text-yellow-400 mb-4">Runas</h2>
+                    <div id="runes-list" class="space-y-2 max-h-64 overflow-y-auto pr-2">
+                        <!-- Runas -->
+                    </div>
+                     <button id="add-rune-item" class="btn-primary w-full mt-4 p-2 rounded-lg"><i class="fas fa-plus mr-2"></i>Adicionar Runa</button>
+                </div>
+
+                <!-- CONTROLE DE RITUAIS -->
+                <div class="card p-4">
+                    <h2 class="font-runic text-2xl text-yellow-400 mb-4">Rituais</h2>
+                    <div id="rituals-list" class="space-y-2 max-h-64 overflow-y-auto pr-2">
+                        <!-- Rituais -->
+                    </div>
+                     <button id="add-ritual-item" class="btn-primary w-full mt-4 p-2 rounded-lg"><i class="fas fa-plus mr-2"></i>Adicionar Ritual</button>
+                </div>
+                
+                <!-- ANOTAÇÕES -->
+                <div class="card p-4">
+                    <h2 class="font-runic text-2xl text-yellow-400 mb-4">Anotações e Objetivos</h2>
+                    <textarea id="notes" class="textarea-base w-full p-2 h-32" placeholder="Planejamento, anotações da sessão..."></textarea>
+                    <textarea id="goals" class="textarea-base w-full p-2 h-32 mt-2" placeholder="Objetivos e focos do personagem..."></textarea>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- BOTÕES FLUTUANTES -->
+    <div class="fixed bottom-5 right-5 flex flex-col gap-3 z-50">
+         <div class="tooltip">
+            <button id="save-button" class="btn-primary w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-lg">
+                <i class="fas fa-save"></i>
+            </button>
+            <span class="tooltiptext">Salvar Localmente</span>
+        </div>
+        <div class="tooltip">
+            <button id="pdf-button" class="btn-secondary w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-lg text-gray-800">
+                <i class="fas fa-file-pdf"></i>
+            </button>
+            <span class="tooltiptext">Exportar PDF</span>
+        </div>
+    </div>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- SELEÇÃO DE ELEMENTOS DO DOM ---
+        const getEl = (id) => document.getElementById(id);
+        const classSelect = getEl('char-class');
+        const classDescriptionContainer = getEl('class-description-container');
+        const raceSelect = getEl('char-race');
+        const raceDescriptionContainer = getEl('race-description-container');
+        const raceChoicesContainer = getEl('race-choices-container');
+        const skillsList = getEl('skills-list');
+        const raceApexesContainer = getEl('race-apexes');
+        const classApexesContainer = getEl('class-apexes');
+        const inventoryList = getEl('inventory-list');
+        const runesList = getEl('runes-list');
+        const ritualsList = getEl('rituals-list');
+        const lifeRollContainer = getEl('life-roll-container');
+        const rollLifeBtn = getEl('roll-life-btn');
+        const lifeRollResult = getEl('life-roll-result');
+        
+        // --- DEFINIÇÕES DE DADOS ---
+
+        // Listas de Talentos e Máculas por Raça
+        const HUMAN_TALENTS = ['Adaptável', 'Diplomático', 'Conhecimento Universal', 'Estratégico', 'Aprendizado Acelerado', 'Corajoso', 'Foco Imparável'];
+        const HUMAN_MACULAS = ['Desconfiado', 'Curioso em Excesso', 'Imprudente', 'Medroso', 'Dependente de Alianças', 'Inseguro', 'Teimoso', 'Frágil'];
+        const VAMPIRE_TALENTS = ['Charme Vampírico', 'Regeneração Sanguínea', 'Transformação em Névoa', 'Velocidade Sobrenatural', 'Imortalidade Sob o Véu', 'Força Devastadora', 'Obra Sobrenatural'];
+        const VAMPIRE_MACULAS_OPTIONAL = ['Fraqueza à Luz Solar', 'Vulnerável a Prata', 'Fome Incontrolável', 'Controle Ancestral', 'Alvo de Caçadores', 'Alergia ao Alho', 'Sombras do Passado'];
+        const DAMPIRO_TALENTS = ['Regeneração Rápida', 'Olhar Hipnótico', 'Visão Noturna Aprimorada', 'Predador Ágil', 'Caçador de Sombras', 'Golpe Vampírico', 'Intuição Sombria'];
+        const DAMPIRO_MACULAS = ['Fascinação por Sangue', 'Vulnerabilidade à Luz Solar', 'Conflito Interno', 'Ecos Sombrio', 'Instinto Selvagem', 'Avidez pelo Poder', 'Aversão a Símbolos Sagrados'];
+        const LICANTROPO_TALENTS = ['Garras Lupinas', 'Sentido do Caçador', 'Pele Resistente', 'Salto da Fera', 'Rugido Intimidador', 'Perseguidor Incansável', 'Foco Predatório'];
+        const LICANTROPO_MACULAS = ['Vulnerável à Prata', 'Instinto Incontrolável', 'Sede de Sangue Lunar', 'Isolamento Instintivo', 'Fobia de Fogo', 'Fúria Incontrolável', 'Marcas da Maldição'];
+        const MEIO_DEMONIO_TALENTS = ['Resistência Infernal', 'Voz dos Abismos', 'Chamas Vivas', 'Intuição Demoníaca', 'Garras do Inferno', 'Terror Ancestral', 'Pele Abrasiva'];
+        const MEIO_DEMONIO_MACULAS = ['Marcado pelo Inferno', 'Alvo de Paladinos', 'Desejo Descontrolado', 'Vozes do Abismo', 'Falta de Empatia', 'Rancor Ardente', 'Vulnerável a Símbolos Sagrados'];
+        const MEIO_CELESTIAL_TALENTS = ['Aura Calmante', 'Toque da Cura', 'Olhar Sincero', 'Chamado Divino', 'Proteção de Luz', 'Escudo Radiante', 'Canto de Paz'];
+        const MEIO_CELESTIAL_MACULAS = ['Vulnerável ao Caos', 'Códigos Inflexíveis', 'Julgamento Eterno', 'Inocência Perigosa', 'Excesso de Misericórdia', 'Hostilidade Demoníaca', 'Riscos da Fé'];
+        const COLOSSO_TALENTS = ['Golpe Sísmico', 'Imunidade à Dor', 'Estabilidade Absoluta', 'Escudo Natural', 'Corpo de Rocha', 'Muralha Andante', 'Grito de Pedra'];
+        const COLOSSO_MACULAS = ['Lento', 'Peso Exagerado', 'Inflexível', 'Vulnerável a Magia Mental', 'Pouco Discreto', 'Fúria Devastadora', 'Falta de Finesse'];
+        const ASTRIS_TALENTS = ['Mente Infinita', 'Gravidade Manipulada', 'Pulsar Cósmico', 'Pressentimento Astral', 'Corpo Incandescente', 'Passo Interplanar', 'Visão Estelar'];
+        const ASTRIS_MACULAS = ['Ausência de Emoções', 'Corpo Alienígena', 'Voz Estranha', 'Incompreensão Humana', 'Presságios Constantes', 'Presença Antinatural', 'Vazio Emocional'];
+        const ECLIPTICO_TALENTS = ['Golpe de Sombra', 'Lança Solar', 'Armadura de Penumbra', 'Reflexo Ofuscante', 'Ruptura Astral', 'Conjuração Fluída', 'Julgamento Duplo'];
+        const ECLIPTICO_MACULAS = ['Instabilidade Mágica', 'Vulto entre Planos', 'Voz Fragmentada', 'Sombra Interior', 'Vulnerável ao Caos ou à Ordem', 'Rejeição das Tradições', 'Dupla Personalidade'];
+        const ZALKHA_TALENTS = ['Furtividade Rastejante', 'Escudo Reptiliano', 'Ataque Enroscado', 'Memória Ancestral', 'Veneno Latente', 'Sussurros Antigos', 'Olhar Estático'];
+        const ZALKHA_MACULAS = ['Sangue Frio', 'Olhar Ameaçador', 'Vontade Reptiliana', 'Isolado Cultural', 'Reflexos Frios', 'Instinto de Predador', 'Fascínio por Presas Fracas'];
+        const MORTALHAS_TALENTS = ['Deslocamento Sussurrante', 'Eco das Almas', 'Névoa Protetora', 'Visão Espiritual', 'Voz das Lamentações', 'Grito do Vazio', 'Caminho da Morte'];
+        const MORTALHAS_MACULAS = ['Voz Espectral', 'Rastro de Frio', 'Memória Quebrada', 'Não-Vida', 'Ressonância Sombria', 'Vazio Interno', 'Visões Perturbadoras'];
+        const CRONIDAS_TALENTS = ['Deslocamento Temporal', 'Visão do Futuro', 'Preservação de Forma', 'Aceleração Mental', 'Inércia Desviada', 'Distorção de Gravidade', 'Linha Quebrada'];
+        const CRONIDAS_MACULAS = ['Eco Temporal', 'Deslocamento Mental', 'Temporalmente Anacrônico', 'Memória Fragmentada', 'Raiva da Realidade', 'Vínculo com o Tempo', 'Rejeitado pelo Presente'];
+        const ELFO_NEGRO_TALENTS = ['Arco das Sombras', 'Lâmina de Trevas', 'Caminho da Mentira', 'Magia Proibida', 'Canto Sombrio', 'Capa da Penumbra', 'Passo Silencioso'];
+        const ELFO_NEGRO_MACULAS = ['Desconfiança Geral', 'Herança Proibida', 'Sede de Poder', 'Ego Inflamado', 'Fascínio por Sombras', 'Estigma Racial', 'Segredos Ocultos'];
+        
+        const rollDiceExpression = (expression) => {
+            if (!expression) return { total: 0, rolls: [], modifier: 0 };
+            const parts = expression.split('+');
+            const [diceCount, diceSides] = parts[0].split('d').map(Number);
+            const modifier = Number(parts[1]) || 0;
+            
+            let rolls = [];
+            let total = 0;
+            for(let i = 0; i < diceCount; i++) {
+                const roll = Math.floor(Math.random() * diceSides) + 1;
+                rolls.push(roll);
+                total += roll;
+            }
+            return { total: total + modifier, rolls, modifier };
+        };
+
+        const RACES = {
+            "Humano": "Versáteis e adaptáveis, os humanos compensam a ausência de talentos sobrenaturais com inteligência, força de vontade e iniciativa. Ganham bônus em perícias ou talentos à escolha.",
+            "Vampiro": "Criaturas amaldiçoadas pela sede de sangue. Possuem regeneração sobrenatural, charme hipnótico e resistência à dor, mas são vulneráveis à luz e fogo.",
+            "Dampiro": "Nascidos da união entre humanos e vampiros, equilibram força sobrenatural com controle emocional. São ágeis e intuitivos, mas carregam instabilidade interior.",
+            "Licantropo": "Bestiais e poderosos, licantropos alternam entre forma humana e lupina. Recebem bônus em combate físico e sentidos aguçados, mas lutam contra a fúria interior.",
+            "Meio-Demônio": "Marcados pelo inferno, possuem aparência distorcida e poderes elementais sombrios. Carregam o estigma do caos, mas também uma força aterradora.",
+            "Meio-Celestial": "Filhos de entidades divinas. Possuem aura sagrada, talentos de cura e proteção, mas vivem sob constante julgamento moral e pressão ética.",
+            "Colosso": "Gigantes entre os mortais, os colossos possuem força descomunal, pele espessa e presença intimidadora. Em troca, são lentos e visados.",
+            "Astris": "Seres ligados às estrelas e ao firmamento. Mestres de magia cósmica e presságios, enxergam além do tempo, mas se afastam do mundo terreno.",
+            "Eclíptico": "Entidades que vivem entre luz e trevas. Instáveis e perigosos, controlam magia dual e possuem dupla natureza que pode mudar em combate.",
+            "Zal’Kha": "Seres reptilianos de alma ancestral, dotados de armaduras naturais, línguas bifurcadas e sentidos térmicos. Exímios caçadores e guardiões.",
+            "Mortalhas": "Criaturas feitas de névoa, sombra e lamentos. Imateriais por natureza, são difíceis de ferir, mas não conseguem tocar o mundo físico com facilidade.",
+            "Crônidas": "Filhos do tempo, possuem consciência temporal expandida. São capazes de manipular pequenos fragmentos do passado ou prever eventos próximos.",
+            "Elfo Negro": "Descendentes das profundezas. Magia, veneno e intriga correm em suas veias. Seus olhos veem no escuro, mas sua alma é perseguida pelas sombras."
+        };
+        
+            const RACE_DATA = {
+            'Humano': { status: { lifeDice: '2d6+5', def: 7, rf: 4, rm: 1 }, featuresText: 'Vontade Indomável: Uma vez por cena, podem repetir um teste de resistência mental ou emocional, ignorando penalidades temporárias.\n\nVersatilidade: Podem escolher uma magia/ritual de qualquer domínio/patrono ou um talento adicional na criação do personagem.\n\nEspírito Cooperativo: Recebem +1 em testes para apoiar aliados (em Diplomacia ou em combate).\n\nDeterminação Heróica: Quando reduzidos a menos de 50% de Vida, recebem +1 em todos os testes até o final do combate.', talents: HUMAN_TALENTS, maculas: HUMAN_MACULAS, choiceLogic: { type: 'standard', talents: 2, maculas: 2 } },
+            'Vampiro': { status: { lifeDice: '3d6+7', def: 8, rf: 2, rm: 2 }, featuresText: 'Nosferatu: Uma vez por cena, o vampiro pode atacar um inimigo para sugar seu sangue, recuperando 2d10 de Vida.\n\nForça Sobrenatural: Vampiros possuem força além do humano, recebendo +1 adicional em testes de Força.\n\nSede de Sangue (Hereditária): Todos os vampiros começam com essa mácula. Ao criar um personagem, escolha apenas uma mácula adicional.\n\nLaço Nefasto: O Vampiro recebe 1 símbolo Ritualístico ou recebe 1 Runa Elemental do Sangue.', talents: VAMPIRE_TALENTS, maculas: VAMPIRE_MACULAS_OPTIONAL, choiceLogic: { type: 'vampire' } },
+            'Dampiro': { status: { lifeDice: '2d6+4', def: 8, rf: 3, rm: 3 }, featuresText: 'Sangue Híbrido: Dampiro recupera 1d8 de Vida ao consumir pequenas quantidades de sangue, mas não são obrigados a se alimentar regularmente como vampiros.\n\nForça Sobrenatural: Vampiros possuem força além do humano, recebendo +1 adicional em testes de Força.\n\nResiliência Sobrenatural: Recebem +2 em testes de resistência a venenos e doenças, devido à mistura de sangue humano e vampírico.\n\nProle de Nosferatu: O Dampiro pode escolher 1 Talento/Mácula de Humano e 1 Talento/Mácula de Vampiro em alternativa aos seus talentos convencionais. Ou podem escolher receber 2 Símbolos Ritualísticos ou 2 Runas de qualquer Elemento.', choiceLogic: { type: 'dampiro' } },
+            'Licantropo': { status: { lifeDice: '4d6+2', def: 5, rf: 5, rm: 0 }, featuresText: 'Fúria Bestial: Uma vez por combate, ganha +2 em todos os testes de Corpo e Força por 2 rodadas.\n\nTransformação Parcial: Pode manifestar garras ou sentidos lupinos, concedendo +1 em Combate ou Percepção.\n\nResistência Ancestral: +2 em testes contra venenos, doenças e efeitos de controle mental.\n\nHerdeiro da Lua: Ao realizar um ritual sob a luz da lua, recebe vantagem automática.', talents: LICANTROPO_TALENTS, maculas: LICANTROPO_MACULAS, choiceLogic: { type: 'standard', talents: 2, maculas: 2 } },
+            'Meio-Demônio': { status: { lifeDice: '2d4+10', def: 9, rf: 2, rm: 4 }, featuresText: 'Sangue do Abismo: Pode conjurar uma magia ou ritual da camada “Ira” com +2 de bônus uma vez por cena.\n\nAura Intimidante: Recebe +1 em testes de Intimidação e +1 de dano contra alvos com medo.\n\nChamas Profanas: Pode conjurar um ataque flamejante causando 1d10 de dano extra (1x por combate).\n\nInstinto da Ruína: Recebe vantagem ao identificar fraquezas mágicas e espirituais.', talents: MEIO_DEMONIO_TALENTS, maculas: MEIO_DEMONIO_MACULAS, choiceLogic: { type: 'standard', talents: 2, maculas: 2 } },
+            'Meio-Celestial': { status: { lifeDice: '3d6+6', def: 10, rf: 1, rm: 6 }, featuresText: 'Luz Interior: Pode curar 1d6 de Vida em si ou em um aliado próximo uma vez por combate.\n\nBênção Celestial: Concede +2 em testes de Alma e Diplomacia ao lidar com humanos e criaturas benignas.\n\nAsas Etéreas: Pode planar ou evitar quedas com teste de Reflexo.\n\nEscudo de Fé: Concede +1 de R.M adicional enquanto estiver consciente.', talents: MEIO_CELESTIAL_TALENTS, maculas: MEIO_CELESTIAL_MACULAS, choiceLogic: { type: 'standard', talents: 2, maculas: 2 } },
+            'Colosso': { status: { lifeDice: '2d4+8', def: 10, rf: 8, rm: 8 }, featuresText: 'Pele de Pedra: Reduz 2 de qualquer dano físico sofrido.\n\nForça Imparável: Recebe +2 em testes de Força e pode carregar o dobro do peso comum.\n\nPassos de Trovão: Causa 1d6 de dano ao redor ao pular ou cair de alturas.\n\nFirmeza de Rocha: Imune a empurrões, quedas forçadas e efeitos de derrubar.', talents: COLOSSO_TALENTS, maculas: COLOSSO_MACULAS, choiceLogic: { type: 'standard', talents: 2, maculas: 2 } },
+            'Astris': { status: { lifeDice: '1d6+12', def: 7, rf: 4, rm: 4 }, featuresText: 'Corpo Estelar: Imune a vácuo, frio e calor extremos.\n\nVoz do Cosmos: Pode se comunicar com seres extraplanares ou pressentir eventos cósmicos.\n\nChamas Negras: Conjura 1 vez por combate uma magia de dano cósmico (1d12 + Alma).\n\nMemória Eterna: Recebe +2 em Ciências, Conhecimentos e Ocultismo.', talents: ASTRIS_TALENTS, maculas: ASTRIS_MACULAS, choiceLogic: { type: 'standard', talents: 2, maculas: 2 } },
+            'Eclíptico': { status: { lifeDice: '3d4+6', def: 7, rf: 6, rm: 6 }, featuresText: 'Fusão de Luz e Trevas: Recebe +1 em testes de Combate e Conjuração quando alterna entre ações ofensivas e defensivas.\n\nRitual da Penumbra: Pode usar rituais tanto de Luz quanto de Sombras com vantagem.\n\nOlhos da Dualidade: Enxerga no escuro absoluto e percebe ilusões com facilidade.\n\nEquilíbrio Interno: Testes de Mente não sofrem penalidades externas.', talents: ECLIPTICO_TALENTS, maculas: ECLIPTICO_MACULAS, choiceLogic: { type: 'standard', talents: 2, maculas: 2 } },
+            'Zal’Kha': { status: { lifeDice: '2d8+6', def: 9, rf: 2, rm: 5 }, featuresText: 'Pele de Escamas: Reduz em 1 qualquer dano físico sofrido.\n\nOlhos Penetrantes: Recebe +2 em testes de Intuição e Sentidos Ocultos.\n\nLíngua Venenosa: Uma vez por combate, seu ataque corpo a corpo causa 1d6 de dano venenoso adicional.\n\nRitual de Sangue Antigo: Recebe +1 em conjuração de rituais com elementos naturais (Terra, Vento, Sangue).', talents: ZALKHA_TALENTS, maculas: ZALKHA_MACULAS, choiceLogic: { type: 'standard', talents: 2, maculas: 2 } },
+            'Mortalhas': { status: { lifeDice: '2d8+10', def: 10, rf: 7, rm: 7 }, featuresText: 'Forma Etérea: Pode atravessar barreiras físicas leves uma vez por cena.\n\nToque Fantasmal: Seus ataques ignoram armaduras físicas por 1 rodada (1x por combate).\n\nMemória Fragmentada: Recebe vantagem em testes de Ocultismo e Percepção.\n\nPresença Silenciosa: +2 em Furtividade e +1 em Reflexos ao agir nas sombras.', talents: MORTALHAS_TALENTS, maculas: MORTALHAS_MACULAS, choiceLogic: { type: 'standard', talents: 2, maculas: 2 } },
+            'Crônidas': { status: { lifeDice: '2d6+4', def: 6, rf: 4, rm: 1 }, featuresText: 'Pulso Temporal: Pode repetir um teste de atributo uma vez por dia (reversão temporal).\n\nEco do Futuro: Recebe +1 em testes de Reflexo, Percepção e Intuição.\n\nDistúrbio Cronal: Pode causar lentidão em um inimigo com sucesso crítico em ataque.\n\nDomínio do Tempo: Recebe vantagem em rituais com a camada “Orgulho” ou “Servidão”.', talents: CRONIDAS_TALENTS, maculas: CRONIDAS_MACULAS, choiceLogic: { type: 'standard', talents: 2, maculas: 2 } },
+            'Elfo Negro': { status: { lifeDice: '5d4+5', def: 11, rf: 5, rm: 7 }, featuresText: 'Magia Natural: Recebe +1 em conjuração de rituais com Camadas de Luxúria e Inveja.\n\nGraça Sombria: Recebe +2 em testes de Furtividade e Reflexos.\n\nOlhos Noturnos: Pode enxergar na escuridão total sem penalidade.\n\nDom da Enganação: +1 em Enganação e Intimidação em ambientes urbanos.', talents: ELFO_NEGRO_TALENTS, maculas: ELFO_NEGRO_MACULAS, choiceLogic: { type: 'standard', talents: 2, maculas: 2 } }
+        };
+
+        const CLASSES = {
+            "Lutador": "Especialista em combate físico, o Lutador domina o campo de batalha com força bruta, técnica e resistência. Ideal para enfrentar inimigos de frente e proteger aliados.",
+            "Mago": "Usuário de magias arcanas, manipula os elementos e as forças do universo. Frágil fisicamente, mas devastador à distância e essencial em combates prolongados.",
+            "Beserker": "Guerreiro selvagem que luta tomado pela fúria. Seus ataques são impulsivos e destrutivos, e quanto mais ferido, mais perigoso se torna.",
+            "Sacerdote": "Canaliza o poder de divindades para curar, proteger e punir. Consegue expulsar entidades sombrias e abençoar aliados com fé.",
+            "Paladino": "Guerreiro sagrado que une espada e oração. Serve como escudo moral e físico do grupo, combinando ataques justos com habilidades de proteção.",
+            "Atirador": "Especialista em combates à distância. Usa armas de fogo, bestas ou arcos com precisão mortal. Possui grande mobilidade e mira certeira.",
+            "Bruxo": "Portador de pactos arcanos, o Bruxo canaliza forças obscuras em troca de poder. Suas magias têm efeitos imprevisíveis e perigosos.",
+            "Caçador": "Mestre dos ambientes naturais e rastreamento. Usa armadilhas, venenos e companheiros animais para dominar o campo e emboscar inimigos.",
+            "Apostador": "Combatente do acaso. Utiliza dados, cartas e truques de sorte como armas. Habilidoso e imprevisível, sempre aposta tudo em cada jogada.",
+            "Ilusório": "Manipulador da realidade sensorial. Cria ilusões, distorções e duplicatas que confundem inimigos e protegem aliados sem que percebam.",
+            "Necromante": "Controlador da morte. Invoca mortos, absorve energia vital e domina rituais sombrios. Poderoso, mas temido até por aliados.",
+            "Poeta das Emoções": "Ser místico que transforma sentimentos em magia. Usa palavras, sons e aura emocional para alterar o campo de batalha de forma inspiradora ou aterradora.",
+            "Artesão": "Criador de armas, itens mágicos e engenhocas únicas. Capaz de forjar artefatos em tempo real, melhorar equipamentos e até usar criações em combate.",
+            "Aniquilador": "Classe destrutiva e implacável. Foca em eliminar inimigos com máxima brutalidade, usando técnicas impiedosas e habilidades devastadoras.",
+            "Mateiro": "Sobrevivente nato. Especializado em emboscadas, rastreamento e terreno hostil. Usa conhecimento do ambiente para dominar qualquer campo de batalha."
+        };
+        
+        const CLASS_DATA = {
+            'Lutador': { status: { vida: 10, rf: 2, rm: 2 }, featuresText: 'ESTRATÉGIA DE COMBATE: Vantagem em testes de Força para usar o ambiente ou atacar pontos fracos.\n\nMESTRE DE ARMAS: Usa qualquer arma com maestria, +1 dado de dano corpo a corpo, troca sem penalidade.\n\nRESISTÊNCIA FEROZ: +6 Defesa temporária após sofrer ataque crítico.\n\nMURALHA VIVA: +2 Defesa contra todos os ataques ao ser cercado por 2 ou mais inimigos por 1 rodada.\n\nMAESTRIA: Estágio 1: +5 de dano físico fixo.', apexText: 'DESAFIO: Fazer uma grande demonstração de força física ou perseverança que impacte a narrativa (ex: derrotar inimigo forte, erguer algo monumental etc).\n\nHABILIDADE CARACTERÍSTICA: Uma vez por combate, pode executar um ataque especial que causa 3d8 + FOR de dano. Se eliminar o inimigo, recupera Vida igual a metade do dano causado.' },
+            'Mago': { status: { vida: 5, rf: 2, rm: 5 }, featuresText: '→ +1 Runa gratuita na criação\n→ +1 em Conjuração Mágica\n→ +2 em Ocultismo\n→ Pode usar rituais com 1 rodada a menos\n→ Ganha +2 em testes de PENSAMENTO com qualquer elemento', apexText: 'DESAFIO: Ao causar um efeito mágico impactante (ex: paralisar um inimigo poderoso, controlar o ambiente ou evitar uma catástrofe com magia).\n\nHABILIDADE: Uma vez por combate, pode lançar uma magia sem custo de runa e com vantagem dupla no teste de conjuração.' },
+            'Beserker': { status: { vida: 15, rf: 2, rm: 1 }, featuresText: '→ +2 em testes de Corpo durante combates\n→ Pode entrar em Fúria por 3 turnos (+2 dano físico, -1 Defesa)\n→ Ao cair abaixo de 25% da Vida, ganha +3 em testes físicos\n→ +1 dado de dano em ataques físicos com armas grandes', apexText: 'DESAFIO: Ao entrar em fúria contra um inimigo maior ou mais forte.\n\nHABILIDADE: Pode ignorar efeitos de dor/penalidade por 2 rodadas e causar +2d12 de dano extra em um ataque.' },
+            'Sacerdote': { status: { vida: 8, rf: 3, rm: 6 }, featuresText: '→ Conjura com +1 bônus se for em nome da devoção\n→ Cura aliados com +1d4 adicional\n→ Pode purificar ou banir entidades com ritual em metade do tempo\n→ +2 em testes de Devoção', apexText: 'DESAFIO: Ao curar um aliado em estado crítico ou expulsar um inimigo espiritual relevante.\n\nHABILIDADE: Uma vez por combate, pode realizar uma cura em área (3 alvos) com 2d8 + ALM de Vida.' },
+            'Paladino': { status: { vida: 10, rf: 8, rm: 6 }, featuresText: '→ Pode usar magia e ataque corpo a corpo sem penalidades\n→ Reduz em -2 o dano mágico recebido se for em nome de sua devoção\n→ +2 em testes contra corrupção ou possessão\n→ Pode causar +1d6 de dano sagrado 1x por combate', apexText: 'DESAFIO: Ao proteger inocentes de uma grande ameaça, resistindo ao mal com firmeza.\n\nHABILIDADE: Pode ativar um escudo sagrado por 2 turnos (absorve até 20 de dano e cura 1d6 ao final).' },
+            'Atirador': { status: { vida: 5, rf: 3, rm: 3 }, featuresText: '→ +2 em Pontaria\n→ Pode disparar duas vezes por rodada (com penalidade de -2 no segundo tiro)\n→ Recebe vantagem ao atacar inimigos em emboscada\n→ +1d6 de dano adicional se estiver em posição elevada', apexText: 'DESAFIO: Ao eliminar um alvo importante com precisão em condições adversas.\n\nHABILIDADE: Pode disparar um “Tiro Certeiro” que ignora cobertura e causa +3d10 de dano.' },
+            'Bruxo': { status: { vida: 6, rf: 2, rm: 4 }, featuresText: '→ Pode escolher um Patrono (entidade) que concede +1 em testes relacionados ao domínio escolhido\n→ +2 em Conjuração Ritualística\n→ Ao conjurar com sucesso, pode invocar um efeito adicional uma vez por cena\n→ Ganha +1 Runa ou Símbolo Ritualístico gratuito', apexText: 'DESAFIO: Ao invocar com sucesso um efeito de um patrono que altera o curso da cena ou história.\n\nHABILIDADE: Uma vez por combate, conjura um ritual instantâneo sem teste, escolhendo entre dano, controle ou cura (escolha ao usar).' },
+            'Caçador': { status: { vida: 7, rf: 3, rm: 2 }, featuresText: '→ +2 em Sobrevivência e Percepção\n→ Pode seguir rastros mágicos e naturais\n→ Causa +1d6 contra alvos previamente observados\n→ Recebe vantagem contra monstros e aberrações naturais', apexText: 'DESAFIO: Ao rastrear e eliminar uma criatura ameaçadora sem ajuda direta.\n\nHABILIDADE: Pode marcar um inimigo como "presa" – ganha +2 em todos os testes contra ele por 3 turnos e +1d12 de dano.' },
+            'Apostador': { status: { vida: 7, rf: 7, rm: 7 }, featuresText: '→ Pode rolar 1d6 por cena e escolher aplicar o número como bônus em qualquer teste\n→ Ganha vantagem em qualquer teste de sorte, blefe ou jogos\n→ Ao obter sucesso crítico, pode jogar novamente e escolher o melhor\n→ +2 em Enganação e Reflexos', apexText: 'DESAFIO: Ao virar uma situação desesperadora a seu favor com sorte ou manipulação.\n\nHABILIDADE: Uma vez por combate, pode transformar uma falha em sucesso com um teste de Carisma (D.A 10 + grau da falha).' },
+            'Ilusório': { status: { vida: 5, rf: 4, rm: 3 }, featuresText: '→ +2 em testes de Enganação e Manipulação\n→ Ilusões têm D.A aumentada em +2\n→ Pode criar duplicatas, vozes, ou imagens com 1 ação rápida\n→ Recebe +1 Runa do Pensamento', apexText: 'DESAFIO: Ao enganar completamente um inimigo, grupo ou multidão com uma ilusão poderosa.\n\nHABILIDADE: Uma vez por cena, cria uma ilusão realista que dura 2 rodadas e confunde todos os oponentes (testes com desvantagem).' },
+            'Necromante': { status: { vida: 4, rf: 1, rm: 6 }, featuresText: '→ +2 em Ocultismo\n→ Pode conjurar magias relacionadas à morte, espíritos e decadência com +1\n→ Pode animar 1 esqueleto/zumbi por dia (padrão, fraco)\n→ +1 Runa de Sangue gratuita', apexText: 'DESAFIO: Ao invocar ou controlar um morto para alterar o equilíbrio da cena.\n\nHABILIDADE: Uma vez por combate, pode reanimar temporariamente 1 aliado caído por 1 turno com 1d12 de Vida e defesa mínima.' },
+            'Poeta das Emoções': { status: { vida: 3, rf: 3, rm: 3 }, featuresText: '→ Escolhe uma emoção (Raiva, Tristeza, Amor, Medo etc.) ao criar o personagem\n→ +2 em testes relacionados à emoção escolhida\n→ Pode inspirar aliados, dando +2 em testes sociais ou +1d6 de dano\n→ Pode anular um medo, trauma ou efeito emocional com uma performance', apexText: 'DESAFIO: Ao comover, curar ou enfurecer um grupo ou inimigo com sua performance.\n\nHABILIDADE: Uma vez por combate, pode aplicar o efeito de sua emoção em todos os aliados e inimigos numa área de 10m.' },
+            'Artesão': { status: { vida: 8, rf: 6, rm: 7 }, featuresText: '→ Pode construir ou reparar armas, itens ou proteções entre cenas\n→ +2 em testes de Profissão e Conhecimentos Gerais\n→ Armas criadas pelo Artesão causam +1d4 de dano\n→ Pode adicionar efeitos extras a itens com runas ou materiais raros', apexText: 'DESAFIO: Ao criar um item lendário, uma arma simbólica ou salvar o grupo com uma criação.\n\nHABILIDADE: Uma vez por sessão, pode criar instantaneamente um equipamento (básico) de sua escolha com bônus especial.' },
+            'Aniquilador': { status: { vida: 7, rf: 7, rm: 2 }, featuresText: '→ +2 em testes de Intimidação\n→ Causa +1d6 de dano em qualquer ataque contra estruturas, objetos ou grupos\n→ Ganha vantagem contra inimigos com armadura ou defesa elevada\n→ Pode escolher destruir armas e escudos com 1 ataque crítico', apexText: 'DESAFIO: Ao destruir um obstáculo significativo, fortaleza, proteção ou eliminar um grupo de inimigos.\n\nHABILIDADE: Uma vez por combate, pode realizar um golpe que ignora armadura e reduz em 1 o R.F do inimigo permanentemente.' },
+            'Mateiro': { status: { vida: 6, rf: 4, rm: 4 }, featuresText: '→ +2 em testes de Sobrevivência, Medicina e Montaria\n→ Não sofre penalidade em terrenos difíceis\n→ Pode se camuflar naturalmente, ganhando vantagem em Furtividade\n→ Ganha resistência natural contra venenos (+2 nos testes)', apexText: 'DESAFIO: Ao salvar um grupo em ambiente hostil com conhecimento da natureza ou eliminar uma criatura natural poderosa.\n\nHABILIDADE: Uma vez por combate, pode invocar um “Aspecto da Natureza” que fornece +2 em todos os testes físicos e +2 R.F por 3 turnos.' }
+        };
+        const EQUIPMENT_DATA = {
+            armor: {
+                leve: { def: 2, thresholds: { damaged: 1, broken: 2 } },
+                media: { def: 5, thresholds: { damaged: 2, broken: 4 } },
+                pesada: { def: 10, thresholds: { damaged: 3, broken: 6 } }
+            },
+            shield: {
+                pequeno: { rf: 2, thresholds: { damaged: 1, broken: 2 } },
+                grande: { rf: 5, thresholds: { damaged: 2, broken: 4 } }
+            }
+        };
+
+        const SKILLS = ['Arremesso[FOR]', 'Arrombamento[FOR]', 'Atletismo[COR]', 'Ciências[MEN]', 'Combate[FOR]', 'Conjuração Mágica[MEN]', 'Conjuração Ritualística[ALM]', 'Investigar[MEN]', 'Medicina[MEN]', 'Montaria[DES]', 'Ocultismo[MEN]', 'Percepção[MEN]', 'Pontaria[DEST]', 'Profissão[MEN]', 'Reflexos[DES]', 'Resistência Física[COR]', 'Resistir Influência[ALM]', 'Sentidos Ocultos[ALM]', 'Sobrevivência[MEN]', 'Conhecimentos Gerais[MEN]', 'Devoção[ALM]', 'Diplomacia[CAR]', 'Enganação[CAR]', 'Furtividade[DES]', 'Intimidação[CAR]', 'Intuição[ALM]'];
+        const RUNE_ELEMENTS = ['Fogo', 'Gelo', 'Água', 'Relâmpago', 'Vento', 'Alma', 'Ferro', 'Terra', 'Sangue'];
+        const RUNE_SIGILS = ['Poder', 'Proteção', 'Pensamento'];
+        const RITUAL_LAYERS = ['Luxúria', 'Gula', 'Avareza', 'Ira', 'Inveja', 'Preguiça', 'Orgulho', 'Pecado', 'Servidão'];
+        
+
+        // --- FUNÇÕES DE INICIALIZAÇÃO E LÓGICA ---
+        function initDropdown(select, options) { select.innerHTML = `<option value="">Selecione...</option>` + Object.keys(options).map(opt => `<option value="${opt}">${opt}</option>`).join(''); }
+        function updateDescriptionBox(container, options, value) { if(options[value]) { container.innerHTML = `<div class="parchment-box">${options[value]}</div>`; container.classList.remove('hidden'); } else { container.classList.add('hidden'); } }
+        function initSkills() { skillsList.innerHTML = SKILLS.map(skill => { const id = `skill-${skill.toLowerCase().replace(/[\s\/]/g, '-')}`; return `<div class="flex items-center gap-2"><input type="checkbox" id="${id}" class="form-checkbox h-5 w-5 rounded bg-gray-700 border-gray-600 text-purple-600 focus:ring-purple-500"><label for="${id}" class="flex-1">${skill}</label><input type="number" id="${id}-level" class="input-base w-16 p-1 text-center" value="0"></div>`; }).join(''); }
+        function createApexes(container, prefix, count) { for (let i = 0; i < count; i++) { container.innerHTML += `<div class="flex flex-col gap-1 apex-item"><input type="text" id="${prefix}-${i}-name" class="input-base w-full p-2" placeholder="Nome do Ápice ${i+1}"><textarea id="${prefix}-${i}-desc" class="textarea-base w-full p-2 h-16" placeholder="Descrição..."></textarea></div>`; } }
+
+        function rollLife() {
+            const raceData = RACE_DATA[raceSelect.value];
+            const classData = CLASS_DATA[classSelect.value];
+            if (!raceData || !classData) {
+                alert("Por favor, selecione uma Raça e uma Classe primeiro.");
+                return;
+            }
+            
+            const raceRoll = rollDiceExpression(raceData.status.lifeDice);
+            const classBonus = classData.status.vida;
+            const finalLife = raceRoll.total + classBonus;
+
+            const diceOverlay = document.createElement('div');
+            diceOverlay.className = 'dice-overlay show';
+            diceOverlay.innerHTML = `<div class="dice">🎲</div><div class="dice">🎲</div>`;
+            document.body.appendChild(diceOverlay);
+
+            setTimeout(() => {
+                document.body.removeChild(diceOverlay);
+                getEl('status-vida').value = finalLife;
+                let resultText = `<p><strong>🎲 Dados rolados:</strong> ${raceRoll.rolls.join(", ")} + ${raceRoll.modifier} (Raça)`;
+                if(classBonus > 0) resultText += ` + ${classBonus} (Classe)`;
+                resultText += `</p><p class="text-2xl font-bold mt-2"><strong>❤️ Vida Total:</strong> ${finalLife}</p>`;
+                lifeRollResult.innerHTML = resultText;
+                
+                document.body.dataset.lifeRolled = 'true';
+                lifeRollContainer.classList.add('hidden');
+            }, 1000);
+        }
+        
+        function updateAllStats() {
+            const raceData = RACE_DATA[raceSelect.value];
+            const classData = CLASS_DATA[classSelect.value];
+            
+            let def = 0, rf = 0, rm = 0;
+
+            if (raceData) { def += raceData.status.def; rf += raceData.status.rf; rm += raceData.status.rm; }
+            if (classData) { def += classData.status.def || 0; rf += classData.status.rf || 0; rm += classData.status.rm || 0; }
+            
+            const deaths = parseInt(getEl('deaths').value, 10) || 0;
+            
+            const armorType = getEl('armor-type').value;
+            const armorData = EQUIPMENT_DATA.armor[armorType];
+            const armorDisplay = getEl('armor-status-display');
+            if(armorData) {
+                let state = 'Inteira';
+                if(deaths >= armorData.thresholds.broken) state = 'Quebrada';
+                else if(deaths >= armorData.thresholds.damaged) state = 'Danificada';
+                armorDisplay.textContent = `Estado: ${state} (+${state === 'Quebrada' ? 0 : armorData.def} DEF)`;
+                armorDisplay.className = `text-sm mt-1 text-center state-${state.toLowerCase()}`;
+                if(state !== 'Quebrada') def += armorData.def;
+            } else {
+                armorDisplay.textContent = '';
+            }
+            
+            const shieldType = getEl('shield-type').value;
+            const shieldData = EQUIPMENT_DATA.shield[shieldType];
+            const shieldDisplay = getEl('shield-status-display');
+             if(shieldData) {
+                let state = 'Inteiro';
+                if(deaths >= shieldData.thresholds.broken) state = 'Quebrado';
+                else if(deaths >= shieldData.thresholds.damaged) state = 'Danificado';
+                shieldDisplay.textContent = `Estado: ${state} (+${state === 'Quebrado' ? 0 : shieldData.rf} RF)`;
+                shieldDisplay.className = `text-sm mt-1 text-center state-${state.toLowerCase().replace('o', '')}`;
+                if(state !== 'Quebrado') rf += shieldData.rf;
+            } else {
+                 shieldDisplay.textContent = '';
+            }
+            getEl('status-def').value = def;
+            getEl('status-rf').value = rf;
+            getEl('status-rm').value = rm;
+        }
+        
+        function handleClassSelection() {
+            updateDescriptionBox(classDescriptionContainer, CLASSES, classSelect.value);
+            const classData = CLASS_DATA[classSelect.value];
+            if (classData && !window.loadingData) {
+                getEl('char-class-features').value = classData.featuresText;
+                getEl('char-apex-text').value = classData.apexText;
+            }
+            document.body.dataset.previousClass = classSelect.value;
+            if (raceSelect.value && classSelect.value && document.body.dataset.lifeRolled === 'false') {
+                lifeRollContainer.classList.remove('hidden');
+                lifeRollResult.innerHTML = '';
+            }
+            updateAllStats();
+        }
+
+        function handleRaceSelection() {
+            const selectedRace = raceSelect.value;
+            const raceData = RACE_DATA[selectedRace];
+            
+            updateDescriptionBox(raceDescriptionContainer, RACES, selectedRace);
+            raceChoicesContainer.innerHTML = ''; 
+            raceChoicesContainer.classList.add('hidden');
+            document.body.dataset.lifeRolled = 'false'; // Resetar a rolagem ao trocar de raça
+
+            if (!raceData) { updateAllStats(); return; }
+
+            if (!window.loadingData) {
+                getEl('char-race-features').value = raceData.featuresText;
+                getEl('char-talents').value = ''; 
+                if (classSelect.value) { // Mostrar botão de rolar apenas se a classe já estiver selecionada
+                    lifeRollContainer.classList.remove('hidden');
+                    lifeRollResult.innerHTML = '';
+                }
+            }
+            
+            updateAllStats(); 
+
+            if (!getEl('char-talents').value && raceData.choiceLogic) {
+                raceChoicesContainer.classList.remove('hidden');
+                setupRaceChoices(raceData);
+            }
+        }
+
+        function setupRaceChoices(raceData) {
+            const { type } = raceData.choiceLogic;
+            if (type === 'standard') {
+                setupStandardChoices(raceData);
+            } else if (type === 'vampire') {
+                setupVampireChoices(raceData);
+            } else if (type === 'dampiro') {
+                setupDampiroChoices();
+            }
+        }
+        
+        function createChoiceHTML(list, title, max, type) {
+            let content = `<div data-type="${type}"><h3 class="font-runic text-xl text-yellow-300 mb-2">${title}</h3><div class="grid grid-cols-2 md:grid-cols-3 gap-2" data-max="${max}">`;
+            list.forEach(item => {
+                const choiceId = `choice-${type}-${item.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+                content += `<div class="flex items-center gap-2 choice-box p-2 rounded"><input type="checkbox" id="${choiceId}" data-name="${item}" class="choice-checkbox form-checkbox h-5 w-5 rounded"><label for="${choiceId}">${item}</label></div>`;
+            });
+            content += '</div></div>';
+            return content;
+        }
+
+        function setupStandardChoices(raceData) {
+            const { talents, maculas, choiceLogic } = raceData;
+            raceChoicesContainer.innerHTML = 
+                createChoiceHTML(talents, `Escolha ${choiceLogic.talents} Talentos`, choiceLogic.talents, 'talent') +
+                `<div class="mt-4">${createChoiceHTML(maculas, `Escolha ${choiceLogic.maculas} Máculas`, choiceLogic.maculas, 'macula')}</div>`;
+        }
+
+        function setupVampireChoices(raceData) {
+            const { talents, maculas } = raceData;
+            let maculaHTML = `<div data-type="macula"><h3 class="font-runic text-xl text-yellow-300 mb-2">Escolha 1 Mácula Adicional</h3><div class="grid grid-cols-2 md:grid-cols-3 gap-2" data-max="2">`;
+            maculaHTML += `<div class="flex items-center gap-2 choice-box p-2 rounded bg-blue-900/50"><input type="checkbox" data-name="Sede de Sangue (Hereditária)" checked disabled class="form-checkbox"><label>Sede de Sangue (Hereditária)</label></div>`;
+            maculas.forEach(item => {
+                const choiceId = `choice-macula-${item.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+                maculaHTML += `<div class="flex items-center gap-2 choice-box p-2 rounded"><input type="checkbox" id="${choiceId}" data-name="${item}" class="choice-checkbox form-checkbox h-5 w-5 rounded"><label for="${choiceId}">${item}</label></div>`;
+            });
+             maculaHTML += `</div></div>`;
+
+            raceChoicesContainer.innerHTML = createChoiceHTML(talents, `Escolha 2 Talentos`, 2, 'talent') + `<div class="mt-4">${maculaHTML}</div>`;
+        }
+
+        function setupDampiroChoices() {
+            raceChoicesContainer.innerHTML = `
+                <h3 class="font-runic text-xl text-yellow-300 mb-2">Prole de Nosferatu: Escolha seu Legado</h3>
+                <div class="flex gap-4 mb-4">
+                    <button id="dampiro-path-default" class="btn-primary p-2 rounded-lg flex-1">Legado de Dampiro</button>
+                    <button id="dampiro-path-hybrid" class="btn-secondary p-2 rounded-lg flex-1">Legado Híbrido</button>
+                </div>
+                <div id="dampiro-default-choices">${createChoiceHTML(DAMPIRO_TALENTS, 'Escolha 2 Talentos de Dampiro', 2, 'talent')} <div class="mt-4">${createChoiceHTML(DAMPIRO_MACULAS, 'Escolha 2 Máculas de Dampiro', 2, 'macula')}</div></div>
+                <div id="dampiro-hybrid-choices" class="hidden">${createChoiceHTML(HUMAN_TALENTS.concat(VAMPIRE_TALENTS), 'Escolha 1 Talento (Humano ou Vampiro)', 1, 'talent')} <div class="mt-4">${createChoiceHTML(HUMAN_MACULAS.concat(VAMPIRE_MACULAS_OPTIONAL), 'Escolha 1 Mácula (Humana ou Vampiro)', 1, 'macula')}</div></div>
+            `;
+            getEl('dampiro-path-default').addEventListener('click', () => { getEl('dampiro-default-choices').classList.remove('hidden'); getEl('dampiro-hybrid-choices').classList.add('hidden'); });
+            getEl('dampiro-path-hybrid').addEventListener('click', () => { getEl('dampiro-default-choices').classList.add('hidden'); getEl('dampiro-hybrid-choices').classList.remove('hidden'); });
+        }
+        
+        raceChoicesContainer.addEventListener('change', (e) => {
+            if (e.target.classList.contains('choice-checkbox')) {
+                const container = e.target.closest('[data-max]');
+                if (!container) return;
+                const max = parseInt(container.dataset.max, 10);
+                
+                const totalChecked = container.querySelectorAll('input:checked').length;
+                
+                container.querySelectorAll('input:not(:checked)').forEach(cb => cb.disabled = totalChecked >= max);
+                updateTalentsAndMaculasText();
+            }
+        });
+
+        function updateTalentsAndMaculasText() {
+            const talentDivs = raceChoicesContainer.querySelectorAll('[data-type="talent"]');
+            const maculaDivs = raceChoicesContainer.querySelectorAll('[data-type="macula"]');
+            
+            let selectedTalents = [];
+            let selectedMaculas = [];
+
+            talentDivs.forEach(container => {
+                if (!container.closest('.hidden')) {
+                    selectedTalents.push(...Array.from(container.querySelectorAll('input:checked')).map(cb => cb.dataset.name));
+                }
+            });
+            maculaDivs.forEach(container => {
+                 if (!container.closest('.hidden')) {
+                    selectedMaculas.push(...Array.from(container.querySelectorAll('input:checked')).map(cb => cb.dataset.name));
+                }
+            });
+            
+            let text = '';
+            if (selectedTalents.length > 0) text += 'Talentos: ' + selectedTalents.join(', ') + '.\n\n';
+            if (selectedMaculas.length > 0) text += 'Máculas: ' + selectedMaculas.join(', ') + '.';
+            getEl('char-talents').value = text;
+            
+            const raceData = RACE_DATA[raceSelect.value];
+            if (!raceData || !raceData.choiceLogic) return;
+            
+            const { choiceLogic } = raceData;
+            let talentsDone = false, maculasDone = false;
+
+            if (choiceLogic.type === 'standard') {
+                talentsDone = selectedTalents.length === choiceLogic.talents;
+                maculasDone = selectedMaculas.length === choiceLogic.maculas;
+            } else if (choiceLogic.type === 'vampire') {
+                talentsDone = selectedTalents.length === 2;
+                maculasDone = selectedMaculas.length === 2; // 1 default + 1 escolhida
+            } else if (choiceLogic.type === 'dampiro') {
+                const isHybrid = !getEl('dampiro-hybrid-choices').classList.contains('hidden');
+                talentsDone = selectedTalents.length === (isHybrid ? 1 : 2);
+                maculasDone = selectedMaculas.length === (isHybrid ? 1 : 2);
+            }
+
+            if (talentsDone && maculasDone) {
+                raceChoicesContainer.classList.add('hidden');
+            }
+        }
+
+        // --- FUNÇÕES DINÂMICAS E UTILITÁRIAS ---
+        function addDynamicListItem(listElement, itemClass, innerHTML) {
+            const itemId = `item-${Date.now()}`;
+            const itemEl = document.createElement('div');
+            itemEl.id = itemId;
+            itemEl.className = itemClass;
+            itemEl.innerHTML = innerHTML.replace(/{{itemId}}/g, itemId);
+            listElement.appendChild(itemEl);
+        }
+
+        function addInventoryItem() { addDynamicListItem(inventoryList, 'p-2 card flex flex-col gap-2', `<div class="flex gap-2"><input type="text" class="input-base flex-grow p-1" placeholder="Nome do Item"><button class="btn-danger p-1 px-2 rounded" onclick="document.getElementById('{{itemId}}').remove()"><i class="fas fa-trash"></i></button></div><textarea class="textarea-base w-full p-1 h-12" placeholder="Descrição"></textarea><div class="grid grid-cols-2 gap-2"><input type="text" class="input-base p-1" placeholder="Dano"><input type="text" class="input-base p-1" placeholder="Efeito/Crítico"></div>`); }
+        function addRune() { addDynamicListItem(runesList, 'p-2 card flex items-center gap-2', `<div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2"><select class="select-base p-1">${RUNE_ELEMENTS.map(e => `<option>${e}</option>`).join('')}</select><select class="select-base p-1">${RUNE_SIGILS.map(s => `<option>${s}</option>`).join('')}</select><input type="number" class="input-base p-1 text-center" placeholder="Acúmulos" value="0"></div><button class="btn-danger p-1 px-2 rounded" onclick="document.getElementById('{{itemId}}').remove()"><i class="fas fa-trash"></i></button>`); }
+        function addRitual() { addDynamicListItem(ritualsList, 'p-2 card flex flex-col', `<div class="flex gap-2 items-center mb-2"><input type="text" class="input-base flex-grow p-1" placeholder="Nome do Ritual"><button class="btn-danger p-1 px-2 rounded" onclick="document.getElementById('{{itemId}}').remove()"><i class="fas fa-trash"></i></button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2"><select class="select-base p-1">${RITUAL_LAYERS.map(l => `<option>${l}</option>`).join('')}</select><input type="number" class="input-base p-1 text-center" placeholder="Usos" value="0"></div><textarea class="textarea-base w-full p-1 h-16" placeholder="Descrição do Ritual..."></textarea>`); }
+        
+        function handleDracmaConversion() {
+            let b = parseInt(getEl('dracma-b').value) || 0;
+            let p = parseInt(getEl('dracma-p').value) || 0;
+            let o = parseInt(getEl('dracma-o').value) || 0;
+            let d = parseInt(getEl('dracma-d').value) || 0;
+
+            p += Math.floor(b / 10); b %= 10;
+            o += Math.floor(p / 10); p %= 10;
+            d += Math.floor(o / 100); o %= 100;
+
+            getEl('dracma-b').value = b; getEl('dracma-p').value = p;
+            getEl('dracma-o').value = o; getEl('dracma-d').value = d;
+            
+            const totalBronze = b + (p * 10) + (o * 100) + (d * 10000);
+            getEl('dracma-details').innerHTML = `
+                <p>♦️ ${d} (equivale a ${d*100} 🪙)</p>
+                <p>🪙 ${o} (equivale a ${o*10} 🥈)</p>
+                <p>🥈 ${p} (equivale a ${p*10} 🟤)</p>
+                <p>🟤 ${b}</p>
+                <p class="pt-1 mt-1 border-t border-gray-600"><strong>Total:</strong> ${totalBronze.toLocaleString('pt-BR')} em Bronze</p>
+            `;
+        }
+
+        // --- SALVAR, CARREGAR, EXPORTAR ---
+        function saveData() { 
+            const dampiroPath = raceSelect.value === 'Dampiro' && getEl('dampiro-hybrid-choices') ? (getEl('dampiro-hybrid-choices').classList.contains('hidden') ? 'default' : 'hybrid') : null;
+            const data = {
+                avatar: getEl('avatar-preview').src,
+                name: getEl('char-name').value,
+                class: getEl('char-class').value,
+                race: getEl('char-race').value,
+                devotion: getEl('char-devotion').value,
+                dampiroPath: dampiroPath,
+                attrs: { cor: getEl('attr-cor').value, for: getEl('attr-for').value, des: getEl('attr-des').value, men: getEl('attr-men').value, alm: getEl('attr-alm').value, car: getEl('attr-car').value },
+                stats: { vida: getEl('status-vida').value, def: getEl('status-def').value, rf: getEl('status-rf').value, rm: getEl('status-rm').value },
+                features: { race: getEl('char-race-features').value, class: getEl('char-class-features').value, talents: getEl('char-talents').value, apexText: getEl('char-apex-text').value },
+                equipment: { armor: getEl('armor-type').value, shield: getEl('shield-type').value, deaths: getEl('deaths').value },
+                dracmas: { b: getEl('dracma-b').value, p: getEl('dracma-p').value, o: getEl('dracma-o').value, d: getEl('dracma-d').value },
+                skills: SKILLS.map(skill => { const id = `skill-${skill.toLowerCase().replace(/[\s\/]/g, '-')}`; return { trained: getEl(id).checked, level: getEl(`${id}-level`).value }; }),
+                inventory: Array.from(inventoryList.children).map(item => ({ name: item.querySelector('input[type=text]').value, desc: item.querySelector('textarea').value, dmg: item.querySelectorAll('input[type=text]')[1].value, crit: item.querySelectorAll('input[type=text]')[2].value })),
+                runes: Array.from(runesList.children).map(item => ({ element: item.querySelectorAll('select')[0].value, sigil: item.querySelectorAll('select')[1].value, stacks: item.querySelector('input').value })),
+                rituals: Array.from(ritualsList.children).map(item => ({ name: item.querySelectorAll('input[type=text]')[0].value, layer: item.querySelector('select').value, uses: item.querySelector('input[type=number]').value, desc: item.querySelector('textarea').value })),
+                lifeRolled: document.body.dataset.lifeRolled === 'true'
+            };
+            localStorage.setItem('draemoraCharacterSheet', JSON.stringify(data));
+            alert('Ficha salva com sucesso!');
+        }
+        function loadData() {
+            window.loadingData = true;
+            const data = JSON.parse(localStorage.getItem('draemoraCharacterSheet'));
+            if (!data) { window.loadingData = false; return; }
+
+            getEl('char-name').value = data.name || '';
+            getEl('char-class').value = data.class || '';
+            getEl('char-race').value = data.race || '';
+            getEl('char-devotion').value = data.devotion || '';
+            getEl('avatar-preview').src = data.avatar || 'https://placehold.co/128x128/0D1B2A/E0E1DD?text=Avatar';
+            
+            if(data.attrs) Object.entries(data.attrs).forEach(([k,v]) => getEl(`attr-${k}`).value = v);
+            if(data.stats) Object.entries(data.stats).forEach(([k,v]) => getEl(`status-${k}`).value = v);
+            if(data.features) {
+                getEl('char-race-features').value = data.features.race || '';
+                getEl('char-class-features').value = data.features.class || '';
+                getEl('char-talents').value = data.features.talents || '';
+                getEl('char-apex-text').value = data.features.apexText || '';
+            }
+             if(data.equipment) {
+                getEl('armor-type').value = data.equipment.armor || 'nenhuma';
+                getEl('shield-type').value = data.equipment.shield || 'nenhum';
+                getEl('deaths').value = data.equipment.deaths || 0;
+            }
+            if(data.dracmas) {
+                getEl('dracma-b').value = data.dracmas.b || 0; getEl('dracma-p').value = data.dracmas.p || 0;
+                getEl('dracma-o').value = data.dracmas.o || 0; getEl('dracma-d').value = data.dracmas.d || 0;
+                handleDracmaConversion();
+            }
+            if(data.skills) data.skills.forEach((s, i) => { const id = `skill-${SKILLS[i].toLowerCase().replace(/[\s\/]/g, '-')}`; if(getEl(id)) { getEl(id).checked = s.trained; getEl(`${id}-level`).value = s.level; } });
+            if(data.inventory) data.inventory.forEach(item => { addInventoryItem(); const i = inventoryList.lastChild; i.querySelector('input[type=text]').value = item.name; i.querySelector('textarea').value = item.desc; i.querySelectorAll('input[type=text]')[1].value = item.dmg; i.querySelectorAll('input[type=text]')[2].value = item.crit; });
+            if(data.runes) data.runes.forEach(item => { addRune(); const r = runesList.lastChild; r.querySelectorAll('select')[0].value = item.element; r.querySelectorAll('select')[1].value = item.sigil; r.querySelector('input').value = item.stacks; });
+            if(data.rituals) data.rituals.forEach(item => { addRitual(); const r = ritualsList.lastChild; r.querySelector('input[type=text]').value = item.name; r.querySelector('select').value = item.layer; r.querySelector('input[type=number]').value = item.uses; r.querySelector('textarea').value = item.desc; });
+            
+            document.body.dataset.lifeRolled = data.lifeRolled || 'false';
+            if (data.lifeRolled) {
+                lifeRollContainer.classList.add('hidden');
+            }
+            
+            handleClassSelection();
+            handleRaceSelection(); 
+
+            if (data.features && data.features.talents) {
+                raceChoicesContainer.classList.add('hidden');
+            }
+            if(data.race === 'Dampiro' && data.dampiroPath) {
+                 const dampiroDefault = getEl('dampiro-default-choices');
+                 const dampiroHybrid = getEl('dampiro-hybrid-choices');
+                if(dampiroDefault && dampiroHybrid) {
+                     if(data.dampiroPath === 'hybrid') {
+                        dampiroDefault.classList.add('hidden');
+                        dampiroHybrid.classList.remove('hidden');
+                    } else {
+                        dampiroDefault.classList.remove('hidden');
+                        dampiroHybrid.classList.add('hidden');
+                    }
+                }
+            }
+            
+            window.loadingData = false;
+        }
+        function exportPDF() { 
+            const sheet = document.getElementById('character-sheet');
+            const charName = getEl('char-name').value || 'personagem_draemora';
+            const options = { margin: 0.5, filename: `${charName.replace(/\s+/g, '_').toLowerCase()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0D1B2A' }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+            html2pdf().from(sheet).set(options).save();
+         }
+
+        // --- EVENT LISTENERS ---
+        getEl('avatar-upload').addEventListener('change', (event) => { const file = event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (e) => getEl('avatar-preview').src = e.target.result; reader.readAsDataURL(file); } });
+        classSelect.addEventListener('change', handleClassSelection);
+        raceSelect.addEventListener('change', handleRaceSelection);
+        ['armor-type', 'shield-type', 'deaths'].forEach(id => getEl(id).addEventListener('change', updateAllStats));
+        ['dracma-b', 'dracma-p', 'dracma-o', 'dracma-d'].forEach(id => getEl(id).addEventListener('input', handleDracmaConversion));
+        rollLifeBtn.addEventListener('click', rollLife);
+        getEl('save-button').addEventListener('click', saveData);
+        getEl('pdf-button').addEventListener('click', exportPDF);
+        getEl('add-inventory-item').addEventListener('click', addInventoryItem);
+        getEl('add-rune-item').addEventListener('click', addRune);
+        getEl('add-ritual-item').addEventListener('click', addRitual);
+
+        // --- INICIALIZAÇÃO DA FICHA ---
+        initDropdown(classSelect, CLASSES);
+        initDropdown(raceSelect, RACE_DATA);
+        initSkills();
+        createApexes(raceApexesContainer, 'race-apex', 4);
+        createApexes(classApexesContainer, 'class-apex', 4);
+        loadData();
+    });
+    </script>
+</body>
+</html>
