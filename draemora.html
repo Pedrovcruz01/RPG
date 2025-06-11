@@ -741,7 +741,7 @@
                     <button id="dampiro-path-hybrid" class="btn-secondary p-2 rounded-lg flex-1">Legado Híbrido</button>
                 </div>
                 <div id="dampiro-default-choices">${createChoiceHTML(DAMPIRO_TALENTS, 'Escolha 2 Talentos de Dampiro', 2, 'talent')} <div class="mt-4">${createChoiceHTML(DAMPIRO_MACULAS, 'Escolha 2 Máculas de Dampiro', 2, 'macula')}</div></div>
-                <div id="dampiro-hybrid-choices" class="hidden">${createChoiceHTML(HUMAN_TALENTS.concat(VAMPIRE_TALENTS), 'Escolha 1 Talento (Humano ou Vampiro)', 1, 'talent')} <div class="mt-4">${createChoiceHTML(HUMAN_MACULAS.concat(VAMPIRE_MACULAS_OPTIONAL), 'Escolha 1 Mácula (Humana ou Vampiro)', 1, 'macula')}</div></div>
+                <div id="dampiro-hybrid-choices" class="hidden">${createChoiceHTML(HUMAN_TALENTS.concat(VAMPIRE_TALENTS), 'Escolha 2 Talento (Humano ou Vampiro)', 2, 'talent')} <div class="mt-4">${createChoiceHTML(HUMAN_MACULAS.concat(VAMPIRE_MACULAS_OPTIONAL), 'Escolha 2 Mácula (Humana ou Vampiro)', 2, 'macula')}</div></div>
             `;
             getEl('dampiro-path-default').addEventListener('click', () => { getEl('dampiro-default-choices').classList.remove('hidden'); getEl('dampiro-hybrid-choices').classList.add('hidden'); });
             getEl('dampiro-path-hybrid').addEventListener('click', () => { getEl('dampiro-default-choices').classList.add('hidden'); getEl('dampiro-hybrid-choices').classList.remove('hidden'); });
