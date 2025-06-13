@@ -339,7 +339,7 @@
                         <div class="flex items-center gap-2">
                             <label for="dracma-d" class="font-bold text-lg" style="color: #e02c2c;">D$D</label>
                             <input type="number" id="dracma-d" class="input-base w-full p-1 text-center" value="1">
-                        </div>
+                        </div>  
                     </div>
                     <div id="dracma-details" class="text-xs space-y-1 bg-gray-900/50 p-2 rounded-lg"></div>
                     <div class="col-span-2 space-y-2 mt-4">
@@ -448,26 +448,26 @@
         const VAMPIRE_MACULAS_OPTIONAL = ['Fraqueza à Luz Solar', 'Vulnerável a Prata', 'Fome Incontrolável', 'Controle Ancestral', 'Alvo de Caçadores', 'Alergia ao Alho', 'Sombras do Passado'];
         const DAMPIRO_TALENTS = ['Regeneração Rápida', 'Olhar Hipnótico', 'Visão Noturna Aprimorada', 'Predador Ágil', 'Caçador de Sombras', 'Golpe Vampírico', 'Intuição Sombria'];
         const DAMPIRO_MACULAS = ['Fascinação por Sangue', 'Vulnerabilidade à Luz Solar', 'Conflito Interno', 'Ecos Sombrio', 'Instinto Selvagem', 'Avidez pelo Poder', 'Aversão a Símbolos Sagrados'];
-        const LICANTROPO_TALENTS = ['Garras Lupinas', 'Sentido do Caçador', 'Pele Resistente', 'Salto da Fera', 'Rugido Intimidador', 'Perseguidor Incansável', 'Foco Predatório'];
-        const LICANTROPO_MACULAS = ['Vulnerável à Prata', 'Instinto Incontrolável', 'Sede de Sangue Lunar', 'Isolamento Instintivo', 'Fobia de Fogo', 'Fúria Incontrolável', 'Marcas da Maldição'];
-        const MEIO_DEMONIO_TALENTS = ['Resistência Infernal', 'Voz dos Abismos', 'Chamas Vivas', 'Intuição Demoníaca', 'Garras do Inferno', 'Terror Ancestral', 'Pele Abrasiva'];
-        const MEIO_DEMONIO_MACULAS = ['Marcado pelo Inferno', 'Alvo de Paladinos', 'Desejo Descontrolado', 'Vozes do Abismo', 'Falta de Empatia', 'Rancor Ardente', 'Vulnerável a Símbolos Sagrados'];
-        const MEIO_CELESTIAL_TALENTS = ['Aura Calmante', 'Toque da Cura', 'Olhar Sincero', 'Chamado Divino', 'Proteção de Luz', 'Escudo Radiante', 'Canto de Paz'];
-        const MEIO_CELESTIAL_MACULAS = ['Vulnerável ao Caos', 'Códigos Inflexíveis', 'Julgamento Eterno', 'Inocência Perigosa', 'Excesso de Misericórdia', 'Hostilidade Demoníaca', 'Riscos da Fé'];
-        const COLOSSO_TALENTS = ['Golpe Sísmico', 'Imunidade à Dor', 'Estabilidade Absoluta', 'Escudo Natural', 'Corpo de Rocha', 'Muralha Andante', 'Grito de Pedra'];
-        const COLOSSO_MACULAS = ['Lento', 'Peso Exagerado', 'Inflexível', 'Vulnerável a Magia Mental', 'Pouco Discreto', 'Fúria Devastadora', 'Falta de Finesse'];
-        const ASTRIS_TALENTS = ['Mente Infinita', 'Gravidade Manipulada', 'Pulsar Cósmico', 'Pressentimento Astral', 'Corpo Incandescente', 'Passo Interplanar', 'Visão Estelar'];
-        const ASTRIS_MACULAS = ['Ausência de Emoções', 'Corpo Alienígena', 'Voz Estranha', 'Incompreensão Humana', 'Presságios Constantes', 'Presença Antinatural', 'Vazio Emocional'];
-        const ECLIPTICO_TALENTS = ['Golpe de Sombra', 'Lança Solar', 'Armadura de Penumbra', 'Reflexo Ofuscante', 'Ruptura Astral', 'Conjuração Fluída', 'Julgamento Duplo'];
-        const ECLIPTICO_MACULAS = ['Instabilidade Mágica', 'Vulto entre Planos', 'Voz Fragmentada', 'Sombra Interior', 'Vulnerável ao Caos ou à Ordem', 'Rejeição das Tradições', 'Dupla Personalidade'];
-        const ZALKHA_TALENTS = ['Furtividade Rastejante', 'Escudo Reptiliano', 'Ataque Enroscado', 'Memória Ancestral', 'Veneno Latente', 'Sussurros Antigos', 'Olhar Estático'];
-        const ZALKHA_MACULAS = ['Sangue Frio', 'Olhar Ameaçador', 'Vontade Reptiliana', 'Isolado Cultural', 'Reflexos Frios', 'Instinto de Predador', 'Fascínio por Presas Fracas'];
-        const MORTALHAS_TALENTS = ['Deslocamento Sussurrante', 'Eco das Almas', 'Névoa Protetora', 'Visão Espiritual', 'Voz das Lamentações', 'Grito do Vazio', 'Caminho da Morte'];
-        const MORTALHAS_MACULAS = ['Voz Espectral', 'Rastro de Frio', 'Memória Quebrada', 'Não-Vida', 'Ressonância Sombria', 'Vazio Interno', 'Visões Perturbadoras'];
-        const CRONIDAS_TALENTS = ['Deslocamento Temporal', 'Visão do Futuro', 'Preservação de Forma', 'Aceleração Mental', 'Inércia Desviada', 'Distorção de Gravidade', 'Linha Quebrada'];
-        const CRONIDAS_MACULAS = ['Eco Temporal', 'Deslocamento Mental', 'Temporalmente Anacrônico', 'Memória Fragmentada', 'Raiva da Realidade', 'Vínculo com o Tempo', 'Rejeitado pelo Presente'];
-        const ELFO_NEGRO_TALENTS = ['Arco das Sombras', 'Lâmina de Trevas', 'Caminho da Mentira', 'Magia Proibida', 'Canto Sombrio', 'Capa da Penumbra', 'Passo Silencioso'];
-        const ELFO_NEGRO_MACULAS = ['Desconfiança Geral', 'Herança Proibida', 'Sede de Poder', 'Ego Inflamado', 'Fascínio por Sombras', 'Estigma Racial', 'Segredos Ocultos'];
+        const LICANTROPO_TALENTS = ['Guardião da Floresta', 'Força Ancestral', 'Sentinela Selvagem', 'Rugido Primordial', 'Transformação Ágil', 'Caminhante Silvestre'];
+        const LICANTROPO_MACULAS = ['Marcas da Dor', 'Instinto Predatório', 'Fúria da Natureza', 'Sangue das Feras', 'Vulnerabilidade Espiritual', 'Ligação Lunas'];
+        const MEIO_DEMONIO_TALENTS = ['Chamas Profanas', 'Lâmina Sombria', 'Regeneração Profana', 'Aura de Medo', 'Lados opostos', 'Conjurador Infernal'];
+        const MEIO_DEMONIO_MACULAS = [ 'Corrupção Crescente', 'Sede de Poder', 'Vulnerabilidade a Magia Divina', 'Marca do Inferno', 'Sussurros Profanos', 'Instabilidade' ];
+        const MEIO_CELESTIAL_TALENTS = [ 'Força Transcendental', 'Visão Sagrada', 'Vontade Inquebrável', 'Guia Luminoso', 'Afinidade com Magia', 'Lâmina de Luz', 'Presença Inspiradora', 'Vínculo Eterno (Cena)' ];
+        const MEIO_CELESTIAL_MACULAS = [ 'Deslocado', 'Exaustão Divina', 'Ligação com o Domínio', 'Presença Arrebatadora', 'Fragilidade Humana', 'Sombra do Divino', 'Rejeição Celestial', 'Cicatrizes do Sangue Divino' ];
+        const COLOSSO_TALENTS = [ 'Interferência', 'Reator Mágico', 'Reforço Energético', 'Última Conjuração', 'Eficiência' ];
+        const COLOSSO_MACULAS = [ 'Sobrecarga Instável', 'Interferência Mágica', 'Desconexão do Núcleo', 'Foco Restrito', 'Dependência Energética Crítica' ];
+        const ASTRIS_TALENTS = [ 'Desejo Cadente', 'Coração de Nebulosa', 'Pulsar Estelar', 'Viajante do Vácuo', 'Voz do Abismo Estelar', 'Movimento Dimensional', 'Gravidade Anômala' ];
+        const ASTRIS_MACULAS = [ 'Reflexo Cósmico', 'Vazio Corporal', 'Pulsar Estelar', 'Antena Estelar', 'Vulnerabilidade ao Eclipse' ];
+        const ECLIPTICO_TALENTS = [ 'Caminhante das Extremidades', 'Aura do Crepúsculo', 'Voz do Infinito', 'Bênção e Maldição', 'Reflexo do Caos', 'Asas do Falcão de Fogo' ];
+        const ECLIPTICO_MACULAS = [ 'Instabilidade Existencial', 'Rejeição Cósmica', 'Fragilidade de Duas Naturezas', 'Conflito de Energias', 'Tentação Interna', 'Rejeição Social' ];
+        const ZALKHA_TALENTS = [ 'Toque Devorador', 'Forma Assimilada (Cena)', 'Língua Predatória', 'Grito Supersônico', 'Sangue Venenoso', 'Glândulas Regenerativas' ];
+        const ZALKHA_MACULAS = [ 'Vulnerabilidade ao Fogo', 'Predadores Solitários', 'Ecos da Mudança', 'Metabolismo Instável', 'Faro da Presa' ];
+        const MORTALHAS_TALENTS = [ 'Golpe da Dívida Impagável', 'Olhar da Última Noite', 'Garras de Execução (Abutre)', 'Correntes Invisíveis', 'Reforçar o Pacto', 'Rastro Espiritual' ];
+        const MORTALHAS_MACULAS = [ 'Fobia Solar', 'Não é bem vindo', 'Fragmentos da Outra Vida', 'Voz da Morte', 'Contrato Infame', 'Rachaduras do Véu' ];
+        const CRONIDAS_TALENTS = [ 'Consciência Temporal', 'Visão do Futuro', 'Preservação de Forma', 'Aceleração Mental', 'Inércia Desviada', 'Distorção de Gravidade', 'Linha Quebrada' ];
+        const CRONIDAS_MACULAS = [ 'Eco Temporal', 'Deslocamento Mental', 'Temporalmente Anacrônico', 'Memória Fragmentada', 'Raiva da Realidade', 'Vínculo com o Tempo', 'Rejeitado pelo Presente' ];
+        const ELFO_NEGRO_TALENTS = [ 'Mentor do Pacto', 'Língua de Elfo', 'Sombras Silenciosas', 'Veneno Cultural', 'Olho do Traidor' ];
+        const ELFO_NEGRO_MACULAS = [ 'Maldito Pela Luz', 'Rancor Ancestral', 'Vínculo Obsessivo', 'Eco da Promessa Quebrada', 'Sombra do Passado' ];
         
         const rollDiceExpression = (expression) => {
             if (!expression) return { total: 0, rolls: [], modifier: 0 };
