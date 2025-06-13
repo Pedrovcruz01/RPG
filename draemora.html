@@ -21,6 +21,74 @@
 
     <style>
         /* Estilos customizados e fontes */
+        :root {
+            --bg-color: #0a0a0a;
+            --text-color: #E0E1DD;
+            --card-bg-color: rgba(27, 38, 59, 0.8);
+            --card-border-color: #415A77;
+            --input-bg-color: #1B263B;
+            --input-border-color: #415A77;
+            --primary-btn-bg: #0077B6;
+            --primary-btn-hover-bg: #0096C7;
+            --secondary-btn-bg: #FFB703;
+            --secondary-btn-hover-bg: #FFC300;
+            --secondary-btn-text: #1B263B;
+            --danger-btn-bg: #b71c1c;
+            --danger-btn-hover-bg: #d32f2f;
+            --yellow-accent: #FFC300;
+            --yellow-text-main: #FFC300; /* Used for font-runic text, original yellow */
+            
+            /* RGB values for rgba backgrounds, if needed for transparency */
+            --red-strong-rgb: 183, 28, 28; /* #b71c1c */
+            --blue-strong-rgb: 25, 118, 210; /* #1976D2 */
+            --green-strong-rgb: 56, 142, 60; /* #388E3C */
+            --purple-strong-rgb: 142, 36, 170; /* #8E24AA */
+            --gray-strong-rgb: 27, 38, 59; /* For dark theme gray backgrounds */
+
+            --red-text-color: #FF7777; /* Default light red for text */
+            --blue-text-color: #77B6FF; /* Default light blue for text */
+            --green-text-color: #77FF77; /* Default light green for text */
+            --purple-text-color: #DDAAFF; /* Default light purple for text */
+
+            --skill-checkbox-bg: #4b5563; /* Tailwind gray-700 */
+            --skill-checkbox-border: #4b5563; /* Tailwind gray-600 */
+            --skill-checkbox-checked: #9333ea; /* Tailwind purple-600 */
+        }
+
+        body.light-theme {
+            --bg-color: #FFFFFF; /* White */
+            --text-color: #1B263B; /* Dark blue/almost black */
+            --card-bg-color: rgba(189, 212, 231, 0.8); /* Light blue from instructions */
+            --card-border-color: #778DA9; /* Medium blue */
+            --input-bg-color: #E0E1DD; /* Lighter grey-blue */
+            --input-border-color: #778DA9;
+            --primary-btn-bg: #0077B6; /* Keep primary blue */
+            --primary-btn-hover-bg: #0096C7;
+            --secondary-btn-bg: #FFD700; /* Yellow */
+            --secondary-btn-hover-bg: #FFC300;
+            --secondary-btn-text: #1B263B;
+            --danger-btn-bg: #d32f2f;
+            --danger-btn-hover-bg: #e57373;
+            --yellow-accent: #FFC300; /* Accent yellow */
+            --yellow-text-main: #DAA520; /* Darker yellow for contrast */
+            
+            /* Light theme specific RGBs for rgba backgrounds */
+            --red-strong-rgb: 183, 28, 28; /* Same as dark for strong colors */
+            --blue-strong-rgb: 25, 118, 210;
+            --green-strong-rgb: 56, 142, 60;
+            --purple-strong-rgb: 142, 36, 170;
+            --gray-strong-rgb: 189, 212, 231; /* Use light blue for light theme gray */
+
+            --red-text-color: #B71C1C; /* Darker red */
+            --blue-text-color: #1976D2; /* Darker blue */
+            --green-text-color: #388E3C; /* Darker green */
+            --purple-text-color: #8E24AA; /* Darker purple */
+
+            --skill-checkbox-bg: #E0E1DD;
+            --skill-checkbox-border: #A0A0A0;
+            --skill-checkbox-checked: #0077B6; /* Primary blue for checked */
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: #0a0a0a; /* Azul escuro */
@@ -49,92 +117,190 @@
             box-shadow: 0 0 0 3px rgba(255, 195, 0, 0.3);
         }
         .btn-primary {
-            background-color: #0077B6; /* Azul primário */
+            background-color: var(--primary-btn-bg);
             color: white;
-            transition: background-color 0.3s ease;
         }
         .btn-primary:hover {
-            background-color: #0096C7;
+            background-color: var(--primary-btn-hover-bg);
         }
         .btn-secondary {
-            background-color: #FFB703; /* Amarelo secundário */
-            color: #1B263B;
-            transition: background-color 0.3s ease;
+            background-color: var(--secondary-btn-bg);
+            color: var(--secondary-btn-text);
         }
         .btn-secondary:hover {
-            background-color: #FFC300;
+            background-color: var(--secondary-btn-hover-bg);
         }
         .btn-danger {
-            background-color: #b71c1c;
+            background-color: var(--danger-btn-bg);
             color: white;
-            transition: background-color 0.3s ease;
         }
         .btn-danger:hover {
-            background-color: #d32f2f;
+            background-color: var(--danger-btn-hover-bg);
         }
-        .tooltip {
-            position: relative;
-            display: inline-block;
+
+        /* Adjusting specific rgba backgrounds to use variables */
+        .bg-red-900\/50 {
+            background-color: rgba(var(--red-strong-rgb), 0.5);
         }
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 140px;
-            background-color: #555;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -70px;
+        .bg-blue-900\/50 {
+            background-color: rgba(var(--blue-strong-rgb), 0.5);
+        }
+        .bg-green-900\/50 {
+            background-color: rgba(var(--green-strong-rgb), 0.5);
+        }
+        .bg-purple-900\/50 {
+            background-color: rgba(var(--purple-strong-rgb), 0.5);
+        }
+        .bg-gray-900\/50 { /* This refers to the dracma-details box and similar */
+            background-color: rgba(var(--gray-strong-rgb), 0.5);
+        }
+        .bg-black\/30 { /* This refers to the deaths counter */
+            background-color: rgba(0,0,0,0.3); /* Keep black opacity */
+        }
+
+        .text-red-300 { color: var(--red-text-color); }
+        .text-blue-300 { color: var(--blue-text-color); }
+        .text-green-300 { color: var(--green-text-color); }
+        .text-purple-300 { color: var(--purple-text-color); }
+        .text-yellow-400 { color: var(--yellow-text-main); } 
+
+        .choice-box {
+            background-color: var(--card-bg-color); /* Use card background for choices */
+            border-color: var(--card-border-color); /* Use card border for choices */
+        }
+        .choice-box input:checked + label {
+            color: var(--primary-btn-bg); /* Highlight checked choices */
+        }
+
+        /* Skill checkboxes */
+        .form-checkbox {
+            background-color: var(--skill-checkbox-bg);
+            border-color: var(--skill-checkbox-border);
+        }
+        .form-checkbox:checked {
+            color: var(--skill-checkbox-checked);
+            border-color: var(--skill-checkbox-checked);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid var(--yellow-accent);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Dice Animation Styles */
+        .dice-overlay-result {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column; /* Allows stacking dice container and result box */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
             opacity: 0;
-            transition: opacity 0.3s;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            gap: 30px; /* Space between dice animation and result box */
         }
-        .tooltip:hover .tooltiptext {
+
+        .dice-overlay-result.show {
+            opacity: 1;
             visibility: visible;
+        }
+
+        .dice-animation-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px; /* Space between individual dice */
+            height: 150px; /* Allocate space for dice to fall */
+            margin-bottom: 20px; /* Space above result box */
+        }
+
+        .animated-die {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Uncial Antiqua', cursive;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            /* Initial state for falling - off screen */
+            transform: translateY(-200px) rotateX(0deg) rotateY(0deg);
+            opacity: 0;
+        }
+
+        .animated-die.start-roll {
+            animation: die-fall 1.5s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards; /* Accelerate then bounce */
+            animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1.2); /* More natural fall */
+            animation-fill-mode: forwards;
             opacity: 1;
         }
-        .parchment-box {
-            background-color: #fdf5e6;
-            color: #5a4a3a;
-            border: 2px solid #c8b79b;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
-            font-family: 'Georgia', serif;
-            min-height: 100px;
+
+        /* Keyframes for the falling and rotating dice */
+        @keyframes die-fall {
+            0% { transform: translateY(-300px) rotateX(0deg) rotateY(0deg) rotateZ(0deg); opacity: 0; }
+            30% { opacity: 1; } /* Fade in during fall */
+            80% { transform: translateY(0px) rotateX(720deg) rotateY(720deg) rotateZ(720deg); }
+            100% { transform: translateY(0px) rotateX(720deg) rotateY(720deg) rotateZ(720deg); opacity: 1; } /* End at a settled state */
         }
-        .choice-box {
-            background-color: rgba(65, 90, 119, 0.8);
-            border: 1px solid #778DA9;
+
+        .animated-die.show-final-value {
+            animation: none; /* Stop any previous animations */
+            transform: none; /* Reset transforms for static display */
+            opacity: 1;
+            background-color: var(--secondary-btn-bg); /* Highlight result */
+            color: var(--secondary-btn-text);
+            box-shadow: 0 0 20px var(--yellow-accent);
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease; /* Smooth transition to final state */
         }
-        .choice-box input:disabled + label {
-            opacity: 0.5;
-            cursor: not-allowed;
+
+        /* Result Box for messages */
+        .result-box {
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            transform: translateY(50px); /* Start below and slide up */
+            opacity: 0;
+            animation: slideIn 0.5s forwards;
         }
-        .state-inteira, .state-inteiro { color: #86efac; }
-        .state-danificada, .state-danificado { color: #facc15; }
-        .state-quebrada, .state-quebrado { color: #f87171; }
-        
-        /* Animação de dados */
-        .dice-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.7); display: flex;
-            justify-content: center; align-items: center; z-index: 100;
-            opacity: 0; visibility: hidden; transition: opacity 0.3s;
+
+        @keyframes slideIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-        .dice-overlay.show {
-            opacity: 1; visibility: visible;
+        /* Style for custom message box animation */
+        #custom-message-box {
+            animation: fadeIn 0.3s forwards;
         }
-        .dice {
-            font-size: 5rem; color: white; margin: 0 1rem;
-            animation: roll 1s ease-out;
-        }
-        @keyframes roll {
-            0% { transform: rotate(0deg) scale(0.5); }
-            100% { transform: rotate(720deg) scale(1); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
@@ -229,8 +395,12 @@
                         <h2 class="font-runic text-2xl text-center text-yellow-400 mb-4">Status</h2>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="bg-red-900/50 p-3 rounded-lg text-center">
-                                <label for="status-vida" class="font-runic text-lg text-red-300">Vida</label>
-                                <input type="number" id="status-vida" class="input-base w-full p-2 text-2xl text-center" value="0">
+                                <label for="status-max-vida" class="font-runic text-lg text-red-300">Vida Máxima</label>
+                                <input type="number" id="status-max-vida" class="input-base w-full p-2 text-2xl text-center" value="0" readonly>
+                            </div>
+                            <div class="bg-red-900/50 p-3 rounded-lg text-center">
+                                <label for="status-current-vida" class="font-runic text-lg text-red-300">Vida Atual</label>
+                                <input type="number" id="status-current-vida" class="input-base w-full p-2 text-2xl text-center" value="0">
                             </div>
                             <div class="bg-blue-900/50 p-3 rounded-lg text-center">
                                 <label for="status-def" class="font-runic text-lg text-blue-300">DEF</label>
@@ -283,17 +453,22 @@
                 </div>
 
                 <!-- CARACTERÍSTICAS E HISTÓRICO -->
-                   <div class="card p-4">
-                    <h2 class="font-runic text-2xl text-yellow-400 mb-4">Características e Histórico</h2>
-                    <div class="space-y-4">
-                        <textarea id="char-race-features" class="textarea-base w-full p-2 h-24" placeholder="Características de Raça..."></textarea>
-                        <textarea id="char-class-features" class="textarea-base w-full p-2 h-24" placeholder="Características de Classe..."></textarea>
-                        <textarea id="char-talents" class="textarea-base w-full p-2 h-24" placeholder="Talentos e Máculas de Raça..."></textarea>
-                        <textarea id="char-apex-text" class="textarea-base w-full p-2 h-24" placeholder="Texto do Ápice de Classe..."></textarea>
-                    </div>
-                </div>
+                    <div class="card p-4">
+                     <h2 class="font-runic text-2xl text-yellow-400 mb-4">Características e Histórico</h2>
+                     <div class="space-y-4">
+                         <textarea id="char-personal-background" class="textarea-base w-full p-2 h-32" placeholder="Histórico Pessoal..."></textarea>
+                         <button id="generate-background-btn" class="btn-primary w-full p-2 rounded-lg mt-2 flex items-center justify-center gap-2">
+                             <span id="generate-background-text">Gerar Histórico ✨</span>
+                             <div id="generate-background-spinner" class="spinner hidden"></div>
+                         </button>
+                         <textarea id="char-race-features" class="textarea-base w-full p-2 h-24" placeholder="Características de Raça..."></textarea>
+                         <textarea id="char-class-features" class="textarea-base w-full p-2 h-24" placeholder="Características de Classe..."></textarea>
+                         <textarea id="char-talents" class="textarea-base w-full p-2 h-24" placeholder="Talentos e Máculas de Raça..."></textarea>
+                         <textarea id="char-apex-text" class="textarea-base w-full p-2 h-24" placeholder="Texto do Ápice de Classe..."></textarea>
+                     </div>
+                 </div>
 
-                   <!-- ESTÁGIOS AVANÇADOS -->
+                    <!-- ESTÁGIOS AVANÇADOS -->
                 <div class="card p-4">
                     <h2 class="font-runic text-2xl text-yellow-400 mb-4">Estágios Avançados</h2>
                     <div class="space-y-4">
@@ -339,7 +514,7 @@
                         <div class="flex items-center gap-2">
                             <label for="dracma-d" class="font-bold text-lg" style="color: #e02c2c;">D$D</label>
                             <input type="number" id="dracma-d" class="input-base w-full p-1 text-center" value="1">
-                        </div>  
+                        </div> 
                     </div>
                     <div id="dracma-details" class="text-xs space-y-1 bg-gray-900/50 p-2 rounded-lg"></div>
                     <div class="col-span-2 space-y-2 mt-4">
@@ -397,43 +572,87 @@
                     <h2 class="font-runic text-2xl text-yellow-400 mb-4">Anotações e Objetivos</h2>
                     <textarea id="notes" class="textarea-base w-full p-2 h-32" placeholder="Planejamento, anotações da sessão..."></textarea>
                     <textarea id="goals" class="textarea-base w-full p-2 h-32 mt-2" placeholder="Objetivos e focos do personagem..."></textarea>
+                    <button id="generate-goals-btn" class="btn-primary w-full p-2 rounded-lg mt-2 flex items-center justify-center gap-2">
+                        <span id="generate-goals-text">Gerar Ideias de Objetivos ✨</span>
+                        <div id="generate-goals-spinner" class="spinner hidden"></div>
+                    </button>
                 </div>
 
             </div>
         </main>
     </div>
 
-    <!-- BOTÕES FLUTUANTES -->
-    <div class="fixed bottom-5 right-5 flex flex-col gap-3 z-50">
+    <!-- BOTÕES DE AÇÃO ORGANIZADOS NO RODAPÉ -->
+    <footer class="max-w-7xl mx-auto p-4 mt-8 card flex flex-wrap justify-center items-center gap-4">
         <div class="tooltip">
-            <button id="save-button" class="btn-primary w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-lg">
+            <button id="save-current-button" class="btn-primary py-3 px-6 rounded-lg text-lg shadow-lg flex items-center gap-2">
                 <i class="fas fa-save"></i>
+                <span>Salvar Ficha Atual</span>
             </button>
-            <span class="tooltiptext">Salvar Localmente</span>
+            <span class="tooltiptext">Salvar as alterações na ficha carregada</span>
         </div>
         <div class="tooltip">
-            <button id="pdf-button" class="btn-secondary w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-lg text-gray-800">
+            <button id="save-as-button" class="btn-primary py-3 px-6 rounded-lg text-lg shadow-lg flex items-center gap-2">
+                <i class="fas fa-file-export"></i>
+                <span>Salvar Ficha (Como)</span>
+            </button>
+            <span class="tooltiptext">Salvar a ficha como um novo arquivo</span>
+        </div>
+        <div class="tooltip">
+            <button id="manage-sheets-button" class="btn-primary py-3 px-6 rounded-lg text-lg shadow-lg flex items-center gap-2">
+                <i class="fas fa-folder-open"></i>
+                <span>Gerenciar Fichas</span>
+            </button>
+            <span class="tooltiptext">Ver, carregar ou excluir fichas salvas</span>
+        </div>
+        <div class="tooltip">
+            <button id="pdf-button" class="btn-secondary py-3 px-6 rounded-lg text-lg shadow-lg flex items-center gap-2">
                 <i class="fas fa-file-pdf"></i>
+                <span>Exportar PDF</span>
             </button>
-            <span class="tooltiptext">Exportar PDF</span>
+            <span class="tooltiptext">Gerar um PDF da ficha atual</span>
         </div>
         <div class="tooltip">
-            <button id="reset-button" class="btn-danger w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-lg">
+            <button id="reset-button" class="btn-danger py-3 px-6 rounded-lg text-lg shadow-lg flex items-center gap-2">
                 <i class="fas fa-redo-alt"></i>
+                <span>Reiniciar Ficha</span>
             </button>
-            <span class="tooltiptext">Reiniciar Ficha</span>
+            <span class="tooltiptext">Limpar todos os campos da ficha</span>
+        </div>
+        <div class="tooltip">
+            <button id="theme-toggle" class="btn-primary py-3 px-6 rounded-lg text-lg shadow-lg flex items-center gap-2">
+                <i class="fas fa-sun" id="theme-icon"></i>
+                <span>Alternar Tema</span>
+            </button>
+            <span class="tooltiptext">Mudar entre tema claro e escuro</span>
+        </div>
+    </footer>
+
+    <!-- Modal para Gerenciar Fichas Salvas -->
+    <div id="manage-sheets-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[1000] hidden">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center max-w-md w-full mx-auto border border-gray-600">
+            <h2 class="font-runic text-2xl text-yellow-400 mb-4">Gerenciar Fichas</h2>
+            <div id="saved-sheets-list" class="max-h-60 overflow-y-auto space-y-2 mb-4">
+                <!-- Fichas salvas serão listadas aqui -->
+            </div>
+            <button id="close-manage-sheets-modal" class="btn-primary py-2 px-4 rounded-lg mt-4">Fechar</button>
         </div>
     </div>
+
+    <!-- Container para a caixa de mensagem personalizada -->
+    <div id="message-box-container"></div>
 
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // --- SELEÇÃO DE ELEMENTOS DO DOM ---
         const getEl = (id) => document.getElementById(id);
+        const charNameInput = getEl('char-name');
         const classSelect = getEl('char-class');
         const classDescriptionContainer = getEl('class-description-container');
         const raceSelect = getEl('char-race');
         const raceDescriptionContainer = getEl('race-description-container');
+        const charDevotionInput = getEl('char-devotion');
         const raceChoicesContainer = getEl('race-choices-container');
         const skillsList = getEl('skills-list');
         const raceApexesContainer = getEl('race-apexes');
@@ -444,10 +663,30 @@
         const lifeRollContainer = getEl('life-roll-container');
         const rollLifeBtn = getEl('roll-life-btn');
         const lifeRollResult = getEl('life-roll-result');
-        
-        // --- DEFINIÇÕES DE DADOS ---
+        const charPersonalBackground = getEl('char-personal-background');
+        const generateBackgroundBtn = getEl('generate-background-btn');
+        const generateBackgroundText = getEl('generate-background-text');
+        const generateBackgroundSpinner = getEl('generate-background-spinner');
+        const notesTextArea = getEl('notes');
+        const goalsTextArea = getEl('goals');
+        const generateGoalsBtn = getEl('generate-goals-btn');
+        const generateGoalsText = getEl('generate-goals-text');
+        const generateGoalsSpinner = getEl('generate-goals-spinner');
 
-        // Listas de Talentos e Máculas por Raça
+        // Novos elementos para Vida e Tema
+        const statusMaxVida = getEl('status-max-vida');
+        const statusCurrentVida = getEl('status-current-vida');
+        const themeToggleButton = getEl('theme-toggle');
+        const themeIcon = getEl('theme-icon');
+        const manageSheetsButton = getEl('manage-sheets-button');
+        const manageSheetsModal = getEl('manage-sheets-modal');
+        const savedSheetsList = getEl('saved-sheets-list');
+        const closeManageSheetsModal = getEl('close-manage-sheets-modal');
+        const saveCurrentButton = getEl('save-current-button'); // New button reference
+        const saveAsButton = getEl('save-as-button'); // Renamed button reference
+
+
+        // --- DEFINIÇÕES DE DADOS ---
         const HUMAN_TALENTS = ['Adaptável', 'Diplomático', 'Conhecimento Universal', 'Estratégico', 'Aprendizado Acelerado', 'Corajoso', 'Foco Imparável'];
         const HUMAN_MACULAS = ['Desconfiado', 'Curioso em Excesso', 'Imprudente', 'Medroso', 'Dependente de Alianças', 'Inseguro', 'Teimoso', 'Frágil'];
         const VAMPIRE_TALENTS = ['Charme Vampírico', 'Regeneração Sanguínea', 'Transformação em Névoa', 'Velocidade Sobrenatural', 'Imortalidade Sob o Véu', 'Força Devastadora', 'Obra Sobrenatural'];
@@ -494,7 +733,7 @@
         const RACES = {
             "Humano": "Versáteis e adaptáveis, os humanos compensam a ausência de talentos sobrenaturais com inteligência, força de vontade e iniciativa. Ganham bônus em perícias ou talentos à escolha.",
             "Vampiro": "Criaturas amaldiçoadas pela sede de sangue. Possuem regeneração sobrenatural, charme hipnótico e resistência à dor, mas são vulneráveis à luz e fogo.",
-            "Dampiro": "Nascidos da união entre humanos e vampiros, equilibram força sobrenatural com controle emocional. São ágeis e intuitivos, mas carregam instabilidade interior.",
+            "Dampiro": "Nascidos da união entre humanos e vampiros, equilibram força sobrenatural com controle emocional. São ágiles e intuitivos, mas carregam instabilidade interior.",
             "Licantropo": "Bestiais e poderosos, licantropos alternam entre forma humana e lupina. Recebem bônus em combate físico e sentidos aguçados, mas lutam contra a fúria interior.",
             "Meio-Demônio": "Marcados pelo inferno, possuem aparência distorcida e poderes elementais sombrios. Carregam o estigma do caos, mas também uma força aterradora.",
             "Meio-Celestial": "Filhos de entidades divinas. Possuem aura sagrada, talentos de cura e proteção, mas vivem sob constante julgamento moral e pressão ética.",
@@ -507,7 +746,7 @@
             "Elfo Negro": "Descendentes das profundezas. Magia, veneno e intriga correm em suas veias. Seus olhos veem no escuro, mas sua alma é perseguida pelas sombras."
         };
         
-            const RACE_DATA = {
+        const RACE_DATA = {
             'Humano': { status: { lifeDice: '2d6+5', def: 7, rf: 4, rm: 1 }, featuresText: 'Vontade Indomável: Uma vez por cena, podem repetir um teste de resistência mental ou emocional, ignorando penalidades temporárias.\n\nVersatilidade: Podem escolher uma magia/ritual de qualquer domínio/patrono ou um talento adicional na criação do personagem.\n\nEspírito Cooperativo: Recebem +1 em testes para apoiar aliados (em Diplomacia ou em combate).\n\nDeterminação Heróica: Quando reduzidos a menos de 50% de Vida, recebem +1 em todos os testes até o final do combate.', talents: HUMAN_TALENTS, maculas: HUMAN_MACULAS, choiceLogic: { type: 'standard', talents: 2, maculas: 2 } },
             'Vampiro': { status: { lifeDice: '3d6+7', def: 8, rf: 2, rm: 2 }, featuresText: 'Nosferatu: Uma vez por cena, o vampiro pode atacar um inimigo para sugar seu sangue, recuperando 2d10 de Vida.\n\nForça Sobrenatural: Vampiros possuem força além do humano, recebendo +1 adicional em testes de Força.\n\nSede de Sangue (Hereditária): Todos os vampiros começam com essa mácula. Ao criar um personagem, escolha apenas uma mácula adicional.\n\nLaço Nefasto: O Vampiro recebe 1 símbolo Ritualístico ou recebe 1 Runa Elemental do Sangue.', talents: VAMPIRE_TALENTS, maculas: VAMPIRE_MACULAS_OPTIONAL, choiceLogic: { type: 'vampire' } },
             'Dampiro': { status: { lifeDice: '2d6+4', def: 8, rf: 3, rm: 3 }, featuresText: 'Sangue Híbrido: Dampiro recupera 1d8 de Vida ao consumir pequenas quantidades de sangue, mas não são obrigados a se alimentar regularmente como vampiros.\n\nForça Sobrenatural: Vampiros possuem força além do humano, recebendo +1 adicional em testes de Força.\n\nResiliência Sobrenatural: Recebem +2 em testes de resistência a venenos e doenças, devido à mistura de sangue humano e vampírico.\n\nProle de Nosferatu: O Dampiro pode escolher 2 Talento/Mácula de Humano e 2 Talento/Mácula de Vampiro em alternativa aos seus talentos convencionais. Ou podem escolher receber 2 Símbolos Ritualísticos ou 2 Runas de qualquer Elemento.', choiceLogic: { type: 'dampiro' } },
@@ -586,31 +825,92 @@
             const raceData = RACE_DATA[raceSelect.value];
             const classData = CLASS_DATA[classSelect.value];
             if (!raceData || !classData) {
-                // Using a custom message box instead of alert()
                 displayMessageBox("Por favor, selecione uma Raça e uma Classe primeiro.");
                 return;
             }
-            
-            const raceRoll = rollDiceExpression(raceData.status.lifeDice);
-            const classBonus = classData.status.vida;
-            const finalLife = raceRoll.total + classBonus;
 
+            const lifeDiceExpression = raceData.status.lifeDice; // e.g., "2d6+5"
+            const parts = lifeDiceExpression.split('+');
+            const [diceCountStr, diceSidesStr] = parts[0].split('d');
+            const diceCount = Number(diceCountStr);
+            const diceSides = Number(diceSidesStr);
+            const modifier = Number(parts[1]) || 0;
+
+            let rolls = [];
+            let totalRollsValue = 0;
+
+            // Create the main overlay for the animation and results
             const diceOverlay = document.createElement('div');
-            diceOverlay.className = 'dice-overlay show';
-            diceOverlay.innerHTML = `<div class="dice">🎲</div><div class="dice">🎲</div>`;
+            diceOverlay.className = 'dice-overlay-result'; // Start hidden
             document.body.appendChild(diceOverlay);
 
+            // Create container for the animated dice
+            const diceAnimationContainer = document.createElement('div');
+            diceAnimationContainer.className = 'dice-animation-container';
+            diceOverlay.appendChild(diceAnimationContainer);
+
+            // Create and append animated die elements
+            const animatedDiceElements = [];
+            for (let i = 0; i < diceCount; i++) {
+                const dieEl = document.createElement('div');
+                dieEl.className = 'animated-die';
+                dieEl.textContent = '🎲'; // Initial emoji for rolling effect
+                diceAnimationContainer.appendChild(dieEl);
+                animatedDiceElements.push(dieEl);
+            }
+
+            // Show the overlay and trigger initial fall animation
+            diceOverlay.classList.add('show');
+            animatedDiceElements.forEach((dieEl, index) => {
+                // Stagger the animation slightly for better effect
+                setTimeout(() => {
+                    dieEl.classList.add('start-roll');
+                }, index * 150); // Small delay for each die
+            });
+
+            // After animation, calculate and show results
+            // This timeout should be slightly longer than the die-fall animation duration (1.5s)
             setTimeout(() => {
-                document.body.removeChild(diceOverlay);
-                getEl('status-vida').value = finalLife;
-                let resultText = `<p><strong>🎲 Dados rolados:</strong> ${raceRoll.rolls.join(", ")} + ${raceRoll.modifier} (Raça)`;
-                if(classBonus > 0) resultText += ` + ${classBonus} (Classe)`;
-                resultText += `</p><p class="text-2xl font-bold mt-2"><strong>❤️ Vida Total:</strong> ${finalLife}</p>`;
-                lifeRollResult.innerHTML = resultText;
-                
+                animatedDiceElements.forEach((dieEl, index) => {
+                    const roll = Math.floor(Math.random() * diceSides) + 1;
+                    rolls.push(roll);
+                    totalRollsValue += roll;
+
+                    // Stop animation and show final value
+                    dieEl.classList.add('show-final-value');
+                    dieEl.textContent = roll;
+                });
+
+                const finalLife = totalRollsValue + modifier + classData.status.vida;
+
+                // Update character sheet inputs
+                statusMaxVida.value = finalLife;
+                statusCurrentVida.value = finalLife;
+
+                let resultText = `<p class="text-xl"><strong>🎲 Rolagens:</strong> ${rolls.join(", ")}`;
+                if (modifier > 0) resultText += ` + ${modifier} (Raça)`;
+                if (classData.status.vida > 0) resultText += ` + ${classData.status.vida} (Classe)`;
+                resultText += `</p><p class="text-4xl font-bold mt-4 text-yellow-400">❤️ Vida Total: ${finalLife}</p>`;
+
+                // Create a result box within the overlay
+                const resultBox = document.createElement('div');
+                resultBox.className = 'result-box';
+                resultBox.innerHTML = resultText + `<button class="btn-primary py-2 px-4 rounded-lg mt-4" id="close-roll-result">Entendido</button>`;
+
+                // Append the result box after the dice animation has settled
+                diceOverlay.appendChild(resultBox);
+
+                // Add event listener to close button
+                getEl('close-roll-result').addEventListener('click', () => {
+                    diceOverlay.classList.remove('show');
+                    // Remove the overlay from DOM after it fades out
+                    setTimeout(() => diceOverlay.remove(), 500);
+                });
+
+                // Set life as rolled and hide the roll button
                 document.body.dataset.lifeRolled = 'true';
                 lifeRollContainer.classList.add('hidden');
-            }, 1000);
+            }, 2000); // Give 2 seconds for the dice animation to play
         }
         
         function updateAllStats() {
@@ -691,7 +991,7 @@
                 }
             }
             
-            updateAllStats();  
+            updateAllStats();   
 
             if (!getEl('char-talents').value && raceData.choiceLogic) {
                 raceChoicesContainer.classList.remove('hidden');
@@ -780,7 +1080,7 @@
                 }
             });
             maculaDivs.forEach(container => {
-                 if (!container.closest('.hidden')) {
+                if (!container.closest('.hidden')) {
                     selectedMaculas.push(...Array.from(container.querySelectorAll('input:checked')).map(cb => cb.dataset.name));
                 }
             });
@@ -845,46 +1145,311 @@
                 <p>♦️ ${d} (equivale a ${d*100} 🪙)</p>
                 <p>🪙 ${o} (equivale a ${o*10} 🥈)</p>
                 <p>🥈 ${p} (equivale a ${p*10} 🟤)</p>
-                <p>🟤 ${b}</p>
                 <p class="pt-1 mt-1 border-t border-gray-600"><strong>Total:</strong> ${totalBronze.toLocaleString('pt-BR')} em Bronze</p>
             `;
         }
 
-        // Custom message box function
+        // Custom message box function (updated to remove existing before creating new)
         function displayMessageBox(message) {
-            const messageBoxId = 'custom-message-box';
-            let messageBox = document.getElementById(messageBoxId);
+            const messageBoxContainer = getEl('message-box-container');
+            // Remove any existing message boxes first
+            while (messageBoxContainer.firstChild) {
+                messageBoxContainer.removeChild(messageBoxContainer.firstChild);
+            }
 
-            if (!messageBox) {
-                messageBox = document.createElement('div');
-                messageBox.id = messageBoxId;
-                messageBox.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[1000]';
-                messageBox.innerHTML = `
-                    <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center max-w-sm mx-auto border border-gray-600">
-                        <p class="text-white text-lg mb-4">${message}</p>
-                        <button class="btn-primary py-2 px-4 rounded-lg" onclick="document.getElementById('${messageBoxId}').remove()">OK</button>
-                    </div>
-                `;
-                document.body.appendChild(messageBox);
-            } else {
-                messageBox.querySelector('p').textContent = message;
-                messageBox.style.display = 'flex';
+            const messageBoxId = 'custom-message-box';
+            let messageBox = document.createElement('div');
+            messageBox.id = messageBoxId;
+            messageBox.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[1000]';
+            messageBox.innerHTML = `
+                <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center max-w-sm mx-auto border border-gray-600">
+                    <p class="text-white text-lg mb-4">${message}</p>
+                    <button class="btn-primary py-2 px-4 rounded-lg" id="message-box-ok-btn">OK</button>
+                </div>
+            `;
+            messageBoxContainer.appendChild(messageBox);
+
+            // Add event listener to the dynamically created OK button
+            getEl('message-box-ok-btn').addEventListener('click', () => {
+                messageBox.remove();
+            });
+        }
+
+        // Nova função para lidar com a mudança na vida atual
+        function handleCurrentVidaChange() {
+            let current = parseInt(statusCurrentVida.value, 10);
+            const max = parseInt(statusMaxVida.value, 10);
+            if (isNaN(current)) current = 0; // Treat non-numbers as 0
+
+            if (current > max) {
+                statusCurrentVida.value = max;
+            } else if (current < 0) {
+                statusCurrentVida.value = 0;
             }
         }
 
-        // --- SALVAR, CARREGAR, EXPORTAR ---
-        function saveData() {  
+        // --- Theme Management ---
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.body.classList.add('light-theme');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            } else {
+                document.body.classList.remove('light-theme');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+            localStorage.setItem('draemoraTheme', theme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('draemoraTheme') || 'dark';
+            applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        }
+
+        // --- Multi-Sheet Management ---
+        let allCharacterSheets = {};
+        let currentLoadedSheetName = null; // To keep track of the currently loaded sheet
+
+        function loadAllSheetsFromLocalStorage() {
+            const storedSheets = localStorage.getItem('draemoraCharacterSheets');
+            if (storedSheets) {
+                allCharacterSheets = JSON.parse(storedSheets);
+            } else {
+                allCharacterSheets = {};
+            }
+        }
+
+        function displaySavedSheets() {
+            savedSheetsList.innerHTML = '';
+            const sheetNames = Object.keys(allCharacterSheets);
+            if (sheetNames.length === 0) {
+                savedSheetsList.innerHTML = '<p class="text-gray-400">Nenhuma ficha salva.</p>';
+                return;
+            }
+
+            sheetNames.forEach(name => {
+                const sheetItem = document.createElement('div');
+                sheetItem.className = 'flex items-center justify-between p-2 card';
+                sheetItem.innerHTML = `
+                    <span class="font-bold">${name}</span>
+                    <div class="flex gap-2">
+                        <button class="btn-primary p-2 rounded-lg text-sm" data-sheet-name="${name}" data-action="load">Carregar</button>
+                        <button class="btn-danger p-2 rounded-lg text-sm" data-sheet-name="${name}" data-action="delete">Excluir</button>
+                    </div>
+                `;
+                savedSheetsList.appendChild(sheetItem);
+            });
+        }
+
+        function loadSheet(sheetName) {
+            if (allCharacterSheets[sheetName]) {
+                clearAllSheetFields(); // Clear current sheet before loading new one
+
+                // Re-initialize dropdowns and skills before loading data
+                initDropdown(classSelect, CLASSES);
+                initDropdown(raceSelect, RACE_DATA);
+                initSkills();
+                raceApexesContainer.innerHTML = '';
+                classApexesContainer.innerHTML = '';
+                createApexes(raceApexesContainer, 'race-apex', 4);
+                createApexes(classApexesContainer, 'class-apex', 4);
+
+                window.loadingData = true; // Prevent reactive updates during load
+                
+                const data = allCharacterSheets[sheetName];
+
+                charNameInput.value = data.name || '';
+                classSelect.value = data.class || '';
+                raceSelect.value = data.race || '';
+                charDevotionInput.value = data.devotion || '';
+                getEl('avatar-preview').src = data.avatar || 'https://placehold.co/128x192/0D1B2A/E0E1DD?text=Avatar';
+                
+                if(data.attrs) Object.entries(data.attrs).forEach(([k,v]) => getEl(`attr-${k}`).value = v);
+                if(data.stats) {
+                    statusMaxVida.value = data.stats.maxVida || 0;
+                    statusCurrentVida.value = data.stats.currentVida || 0;
+                    getEl('status-def').value = data.stats.def || 0;
+                    getEl('status-rf').value = data.stats.rf || 0;
+                    getEl('status-rm').value = data.stats.rm || 0;
+                }
+                if(data.features) {
+                    getEl('char-race-features').value = data.features.race || '';
+                    getEl('char-class-features').value = data.features.class || '';
+                    getEl('char-talents').value = data.features.talents || '';
+                    getEl('char-apex-text').value = data.features.apexText || '';
+                    charPersonalBackground.value = data.features.personalBackground || '';
+                }
+                if(data.equipment) {
+                    getEl('armor-type').value = data.equipment.armor || 'nenhuma';
+                    getEl('shield-type').value = data.equipment.shield || 'nenhum';
+                    getEl('deaths').value = data.equipment.deaths || 0;
+                }
+                if(data.dracmas) {
+                    getEl('dracma-b').value = data.dracmas.b || 0; getEl('dracma-p').value = data.dracmas.p || 0;
+                    getEl('dracma-o').value = data.dracmas.o || 0; getEl('dracma-d').value = data.dracmas.d || 0;
+                    handleDracmaConversion();
+                }
+                if(data.skills) data.skills.forEach((s, i) => { const id = `skill-${SKILLS[i].toLowerCase().replace(/[\s\/]/g, '-')}`; if(getEl(id)) { getEl(id).checked = s.trained; getEl(`${id}-level`).value = s.level; } });
+                
+                inventoryList.innerHTML = '';
+                if(data.inventory) data.inventory.forEach(item => { addInventoryItem(); const i = inventoryList.lastChild; i.querySelector('input[type=text]').value = item.name; i.querySelector('textarea').value = item.desc; if (item.dmg) i.querySelectorAll('input[type=text]')[1].value = item.dmg; if (item.crit) i.querySelectorAll('input[type=text]')[2].value = item.crit; });
+                
+                runesList.innerHTML = '';
+                if(data.runes) data.runes.forEach(item => { addRune(); const r = runesList.lastChild; r.querySelectorAll('select')[0].value = item.element; r.querySelectorAll('select')[1].value = item.sigil; r.querySelector('input').value = item.stacks; });
+                
+                ritualsList.innerHTML = '';
+                if(data.rituals) data.rituals.forEach(item => { addRitual(); const r = ritualsList.lastChild; r.querySelector('input[type=text]').value = item.name; r.querySelector('select').value = item.layer; r.querySelector('input[type=number]').value = item.uses; r.querySelector('textarea').value = item.desc; });
+                
+                if (data.stage2) { getEl('stage2-name').value = data.stage2.name || ''; getEl('stage2-benefit').value = data.stage2.benefit || ''; }
+                if (data.stage3) { getEl('stage3-name').value = data.stage3.name || ''; getEl('stage3-ability').value = data.stage3.ability || ''; }
+                if (data.stage4) { getEl('stage4-name').value = data.stage4.name || ''; getEl('stage4-effect').value = data.stage4.effect || ''; }
+                
+                notesTextArea.value = data.notes || '';
+                goalsTextArea.value = data.goals || '';
+
+                document.body.dataset.lifeRolled = data.lifeRolled || 'false';
+                if (data.lifeRolled === 'true') {
+                    lifeRollContainer.classList.add('hidden');
+                } else {
+                    lifeRollContainer.classList.remove('hidden');
+                }
+                
+                handleClassSelection();
+                handleRaceSelection();
+
+                if (data.features && data.features.talents) {
+                    raceChoicesContainer.classList.add('hidden');
+                } else if (RACE_DATA[data.race] && RACE_DATA[data.race].choiceLogic) {
+                    raceChoicesContainer.classList.remove('hidden');
+                    setupRaceChoices(RACE_DATA[data.race]);
+                    // Re-check selected choices if any
+                    if (data.features && data.features.talents) {
+                        const loadedTalents = data.features.talents.match(/Talentos: (.*?)\./)?.[1]?.split(', ') || [];
+                        const loadedMaculas = data.features.talents.match(/Máculas: (.*?)\./)?.[1]?.split(', ') || [];
+                        loadedTalents.forEach(t => {
+                            const cb = getEl(`choice-talent-${t.toLowerCase().replace(/[^a-z0-9]/g, '')}`);
+                            if (cb) cb.checked = true;
+                        });
+                        loadedMaculas.forEach(m => {
+                            const cb = getEl(`choice-macula-${m.toLowerCase().replace(/[^a-z0-9]/g, '')}`);
+                            if (cb) cb.checked = true;
+                        });
+                        updateTalentsAndMaculasText(); // Re-run to update disabled states
+                    }
+                }
+                if(data.race === 'Dampiro' && data.dampiroPath) {
+                   const dampiroDefault = getEl('dampiro-default-choices');
+                   const dampiroHybrid = getEl('dampiro-hybrid-choices');
+                    if(dampiroDefault && dampiroHybrid) {
+                       if(data.dampiroPath === 'hybrid') {
+                            dampiroDefault.classList.add('hidden');
+                            dampiroHybrid.classList.remove('hidden');
+                        } else {
+                            dampiroDefault.classList.remove('hidden');
+                            dampiroHybrid.classList.add('hidden');
+                        }
+                    }
+                }
+                
+                window.loadingData = false;
+                currentLoadedSheetName = sheetName;
+                localStorage.setItem('lastLoadedSheet', sheetName); // Save last loaded sheet
+                displayMessageBox(`Ficha "${sheetName}" carregada com sucesso!`);
+                manageSheetsModal.classList.add('hidden'); // Close modal after loading
+            } else {
+                displayMessageBox(`Ficha "${sheetName}" não encontrada.`);
+            }
+        }
+
+        function deleteSheet(sheetName) {
+            const messageBoxId = 'confirm-delete-box';
+            let confirmBox = document.getElementById(messageBoxId);
+
+            if (!confirmBox) {
+                confirmBox = document.createElement('div');
+                confirmBox.id = messageBoxId;
+                confirmBox.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[1000]';
+                confirmBox.innerHTML = `
+                    <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center max-w-sm mx-auto border border-gray-600">
+                        <p class="text-white text-lg mb-4">Tem certeza que deseja excluir a ficha "${sheetName}"? Esta ação é irreversível.</p>
+                        <div class="flex justify-center gap-4">
+                            <button class="btn-danger py-2 px-4 rounded-lg" id="confirm-delete-yes">Sim, Excluir</button>
+                            <button class="btn-primary py-2 px-4 rounded-lg" onclick="document.getElementById('${messageBoxId}').remove()">Cancelar</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(confirmBox);
+
+                getEl('confirm-delete-yes').addEventListener('click', () => {
+                    document.body.removeChild(confirmBox); // Close the confirmation box
+                    delete allCharacterSheets[sheetName];
+                    localStorage.setItem('draemoraCharacterSheets', JSON.stringify(allCharacterSheets));
+                    displayMessageBox(`Ficha "${sheetName}" excluída com sucesso!`);
+                    displaySavedSheets(); // Refresh the list
+                    if (currentLoadedSheetName === sheetName) {
+                        clearAllSheetFields(); // Clear current sheet if it was the one deleted
+                        currentLoadedSheetName = null;
+                        localStorage.removeItem('lastLoadedSheet');
+                    }
+                });
+            } else {
+                confirmBox.querySelector('p').textContent = `Tem certeza que deseja excluir a ficha "${sheetName}"? Esta ação é irreversível.`;
+                confirmBox.style.display = 'flex';
+            }
+        }
+
+
+        function saveDataPrompt() {
+            const sheetName = prompt("Digite um nome para salvar a ficha:");
+            if (sheetName) {
+                if (allCharacterSheets[sheetName]) {
+                    const overwriteConfirmBoxId = 'confirm-overwrite-box';
+                    let overwriteConfirmBox = document.getElementById(overwriteConfirmBoxId);
+
+                    if (!overwriteConfirmBox) {
+                        overwriteConfirmBox = document.createElement('div');
+                        overwriteConfirmBox.id = overwriteConfirmBoxId;
+                        overwriteConfirmBox.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[1000]';
+                        overwriteConfirmBox.innerHTML = `
+                            <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center max-w-sm mx-auto border border-gray-600">
+                                <p class="text-white text-lg mb-4">Já existe uma ficha com o nome "${sheetName}". Deseja substituí-la?</p>
+                                <div class="flex justify-center gap-4">
+                                    <button class="btn-danger py-2 px-4 rounded-lg" id="confirm-overwrite-yes">Sim, Substituir</button>
+                                    <button class="btn-primary py-2 px-4 rounded-lg" onclick="document.getElementById('${overwriteConfirmBoxId}').remove()">Cancelar</button>
+                                </div>
+                            </div>
+                        `;
+                        document.body.appendChild(overwriteConfirmBox);
+
+                        getEl('confirm-overwrite-yes').addEventListener('click', () => {
+                            document.body.removeChild(overwriteConfirmBox);
+                            saveCurrentSheetData(sheetName);
+                        });
+                    } else {
+                        overwriteConfirmBox.querySelector('p').textContent = `Já existe uma ficha com o nome "${sheetName}". Deseja substituí-la?`;
+                        overwriteConfirmBox.style.display = 'flex';
+                    }
+                } else {
+                    saveCurrentSheetData(sheetName);
+                }
+            } else {
+                displayMessageBox("Nome da ficha não pode ser vazio.");
+            }
+        }
+
+        function saveCurrentSheetData(sheetName) {
             const dampiroPath = raceSelect.value === 'Dampiro' && getEl('dampiro-hybrid-choices') ? (getEl('dampiro-hybrid-choices').classList.contains('hidden') ? 'default' : 'hybrid') : null;
             const data = {
                 avatar: getEl('avatar-preview').src,
-                name: getEl('char-name').value,
-                class: getEl('char-class').value,
-                race: getEl('char-race').value,
-                devotion: getEl('char-devotion').value,
+                name: charNameInput.value,
+                class: classSelect.value,
+                race: raceSelect.value,
+                devotion: charDevotionInput.value,
                 dampiroPath: dampiroPath,
                 attrs: { cor: getEl('attr-cor').value, for: getEl('attr-for').value, des: getEl('attr-des').value, men: getEl('attr-men').value, alm: getEl('attr-alm').value, car: getEl('attr-car').value },
-                stats: { vida: getEl('status-vida').value, def: getEl('status-def').value, rf: getEl('status-rf').value, rm: getEl('status-rm').value },
-                features: { race: getEl('char-race-features').value, class: getEl('char-class-features').value, talents: getEl('char-talents').value, apexText: getEl('char-apex-text').value },
+                stats: { maxVida: statusMaxVida.value, currentVida: statusCurrentVida.value, def: getEl('status-def').value, rf: getEl('status-rf').value, rm: getEl('status-rm').value },
+                features: { race: getEl('char-race-features').value, class: getEl('char-class-features').value, talents: getEl('char-talents').value, apexText: getEl('char-apex-text').value, personalBackground: charPersonalBackground.value },
                 equipment: { armor: getEl('armor-type').value, shield: getEl('shield-type').value, deaths: getEl('deaths').value },
                 dracmas: { b: getEl('dracma-b').value, p: getEl('dracma-p').value, o: getEl('dracma-o').value, d: getEl('dracma-d').value },
                 skills: SKILLS.map(skill => { const id = `skill-${skill.toLowerCase().replace(/[\s\/]/g, '-')}`; return { trained: getEl(id).checked, level: getEl(`${id}-level`).value }; }),
@@ -895,92 +1460,90 @@
                 stage2: { name: getEl('stage2-name').value, benefit: getEl('stage2-benefit').value },
                 stage3: { name: getEl('stage3-name').value, ability: getEl('stage3-ability').value },
                 stage4: { name: getEl('stage4-name').value, effect: getEl('stage4-effect').value },
-                notes: getEl('notes').value,
-                goals: getEl('goals').value
+                notes: notesTextArea.value,
+                goals: goalsTextArea.value
             };
-            localStorage.setItem('draemoraCharacterSheet', JSON.stringify(data));
-            displayMessageBox('Ficha salva com sucesso!');
+            allCharacterSheets[sheetName] = data;
+            localStorage.setItem('draemoraCharacterSheets', JSON.stringify(allCharacterSheets));
+            currentLoadedSheetName = sheetName;
+            localStorage.setItem('lastLoadedSheet', sheetName); // Save last loaded sheet
+            displayMessageBox(`Ficha "${sheetName}" salva com sucesso!`);
         }
 
-        function loadData() {
-            window.loadingData = true;
-            const data = JSON.parse(localStorage.getItem('draemoraCharacterSheet'));
-            if (!data) { window.loadingData = false; return; }
-
-            getEl('char-name').value = data.name || '';
-            getEl('char-class').value = data.class || '';
-            getEl('char-race').value = data.race || '';
-            getEl('char-devotion').value = data.devotion || '';
-            getEl('avatar-preview').src = data.avatar || 'https://placehold.co/128x128/0D1B2A/E0E1DD?text=Avatar';
-            
-            if(data.attrs) Object.entries(data.attrs).forEach(([k,v]) => getEl(`attr-${k}`).value = v);
-            if(data.stats) Object.entries(data.stats).forEach(([k,v]) => getEl(`status-${k}`).value = v);
-            if(data.features) {
-                getEl('char-race-features').value = data.features.race || '';
-                getEl('char-class-features').value = data.features.class || '';
-                getEl('char-talents').value = data.features.talents || '';
-                getEl('char-apex-text').value = data.features.apexText || '';
+        function saveCurrentSheet() {
+            if (currentLoadedSheetName) {
+                saveCurrentSheetData(currentLoadedSheetName);
+            } else {
+                saveDataPrompt(); // If no sheet is loaded, prompt for a new name
             }
-             if(data.equipment) {
-                getEl('armor-type').value = data.equipment.armor || 'nenhuma';
-                getEl('shield-type').value = data.equipment.shield || 'nenhum';
-                getEl('deaths').value = data.equipment.deaths || 0;
-            }
-            if(data.dracmas) {
-                getEl('dracma-b').value = data.dracmas.b || 0; getEl('dracma-p').value = data.dracmas.p || 0;
-                getEl('dracma-o').value = data.dracmas.o || 0; getEl('dracma-d').value = data.dracmas.d || 0;
-                handleDracmaConversion();
-            }
-            if(data.skills) data.skills.forEach((s, i) => { const id = `skill-${SKILLS[i].toLowerCase().replace(/[\s\/]/g, '-')}`; if(getEl(id)) { getEl(id).checked = s.trained; getEl(`${id}-level`).value = s.level; } });
-            
-            inventoryList.innerHTML = ''; // Clear current
-            if(data.inventory) data.inventory.forEach(item => { addInventoryItem(); const i = inventoryList.lastChild; i.querySelector('input[type=text]').value = item.name; i.querySelector('textarea').value = item.desc; if (item.dmg) i.querySelectorAll('input[type=text]')[1].value = item.dmg; if (item.crit) i.querySelectorAll('input[type=text]')[2].value = item.crit; });
-            
-            runesList.innerHTML = ''; // Clear current
-            if(data.runes) data.runes.forEach(item => { addRune(); const r = runesList.lastChild; r.querySelectorAll('select')[0].value = item.element; r.querySelectorAll('select')[1].value = item.sigil; r.querySelector('input').value = item.stacks; });
-            
-            ritualsList.innerHTML = ''; // Clear current
-            if(data.rituals) data.rituals.forEach(item => { addRitual(); const r = ritualsList.lastChild; r.querySelector('input[type=text]').value = item.name; r.querySelector('select').value = item.layer; r.querySelector('input[type=number]').value = item.uses; r.querySelector('textarea').value = item.desc; });
-            
-            // Load advanced stages
-            if (data.stage2) { getEl('stage2-name').value = data.stage2.name || ''; getEl('stage2-benefit').value = data.stage2.benefit || ''; }
-            if (data.stage3) { getEl('stage3-name').value = data.stage3.name || ''; getEl('stage3-ability').value = data.stage3.ability || ''; }
-            if (data.stage4) { getEl('stage4-name').value = data.stage4.name || ''; getEl('stage4-effect').value = data.stage4.effect || ''; }
-            
-            // Load notes and goals
-            getEl('notes').value = data.notes || '';
-            getEl('goals').value = data.goals || '';
-
-            document.body.dataset.lifeRolled = data.lifeRolled || 'false';
-            if (data.lifeRolled) {
-                lifeRollContainer.classList.add('hidden');
-            }
-            
-            handleClassSelection();
-            handleRaceSelection();  
-
-            if (data.features && data.features.talents) {
-                raceChoicesContainer.classList.add('hidden');
-            }
-            if(data.race === 'Dampiro' && data.dampiroPath) {
-                 const dampiroDefault = getEl('dampiro-default-choices');
-                 const dampiroHybrid = getEl('dampiro-hybrid-choices');
-                if(dampiroDefault && dampiroHybrid) {
-                     if(data.dampiroPath === 'hybrid') {
-                        dampiroDefault.classList.add('hidden');
-                        dampiroHybrid.classList.remove('hidden');
-                    } else {
-                        dampiroDefault.classList.remove('hidden');
-                        dampiroHybrid.classList.add('hidden');
-                    }
-                }
-            }
-            
-            window.loadingData = false;
         }
+
+        function clearAllSheetFields() {
+            getEl('avatar-preview').src = 'https://placehold.co/128x192/0D1B2A/E0E1DD?text=Avatar';
+            
+            document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(input => {
+                input.value = '';
+            });
+
+            document.querySelectorAll('select').forEach(select => {
+                select.selectedIndex = 0;
+            });
+            getEl('armor-type').value = 'nenhuma';
+            getEl('shield-type').value = 'nenhum';
+
+            const attrs = ['cor', 'for', 'des', 'men', 'alm', 'car'];
+            attrs.forEach(attr => getEl(`attr-${attr}`).value = 0);
+
+            statusMaxVida.value = 0;
+            statusCurrentVida.value = 0;
+            getEl('status-def').value = 0;
+            getEl('status-rf').value = 0;
+            getEl('status-rm').value = 0;
+            getEl('deaths').value = 0;
+
+            inventoryList.innerHTML = '';
+            runesList.innerHTML = '';
+            ritualsList.innerHTML = '';
+
+            SKILLS.forEach(skill => {
+                const id = `skill-${skill.toLowerCase().replace(/[\s\/]/g, '-')}`;
+                const checkbox = getEl(id);
+                const levelInput = getEl(`${id}-level`);
+                if (checkbox) checkbox.checked = false;
+                if (levelInput) levelInput.value = 0;
+            });
+
+            classDescriptionContainer.innerHTML = '';
+            classDescriptionContainer.classList.add('hidden');
+            raceDescriptionContainer.innerHTML = '';
+            raceDescriptionContainer.classList.add('hidden');
+            raceChoicesContainer.innerHTML = '';
+            raceChoicesContainer.classList.add('hidden');
+
+            document.body.dataset.lifeRolled = 'false';
+            lifeRollContainer.classList.add('hidden');
+            lifeRollResult.innerHTML = '';
+            
+            getEl('dracma-b').value = 1;
+            getEl('dracma-p').value = 1;
+            getEl('dracma-o').value = 1;
+            getEl('dracma-d').value = 1;
+            handleDracmaConversion();
+
+            initDropdown(classSelect, CLASSES);
+            initDropdown(raceSelect, RACE_DATA);
+            initSkills();
+            raceApexesContainer.innerHTML = '';
+            classApexesContainer.innerHTML = '';
+            createApexes(raceApexesContainer, 'race-apex', 4);
+            createApexes(classApexesContainer, 'class-apex', 4);
+            updateAllStats();
+            currentLoadedSheetName = null;
+            localStorage.removeItem('lastLoadedSheet');
+        }
+
 
         function resetData() {
-            // Confirm with user using custom message box
             const messageBoxId = 'confirm-reset-box';
             let confirmBox = document.getElementById(messageBoxId);
 
@@ -990,7 +1553,7 @@
                 confirmBox.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[1000]';
                 confirmBox.innerHTML = `
                     <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center max-w-sm mx-auto border border-gray-600">
-                        <p class="text-white text-lg mb-4">Tem certeza que deseja reiniciar a ficha? Todos os dados não salvos serão perdidos.</p>
+                        <p class="text-white text-lg mb-4">Tem certeza que deseja reiniciar a ficha? Todos os dados atuais serão perdidos, mas as fichas salvas permanecerão.</p>
                         <div class="flex justify-center gap-4">
                             <button class="btn-danger py-2 px-4 rounded-lg" id="confirm-reset-yes">Sim, Reiniciar</button>
                             <button class="btn-primary py-2 px-4 rounded-lg" onclick="document.getElementById('${messageBoxId}').remove()">Cancelar</button>
@@ -1001,113 +1564,205 @@
 
                 getEl('confirm-reset-yes').addEventListener('click', () => {
                     document.body.removeChild(confirmBox); // Close the confirmation box
-                    
-                    // Reset avatar
-                    getEl('avatar-preview').src = 'https://placehold.co/128x192/0D1B2A/E0E1DD?text=Avatar';
-                    
-                    // Reset all input and textarea fields
-                    document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(input => {
-                        input.value = '';
-                    });
-
-                    // Reset all select elements to their first option or default
-                    document.querySelectorAll('select').forEach(select => {
-                        select.selectedIndex = 0;
-                    });
-                    getEl('armor-type').value = 'nenhuma';
-                    getEl('shield-type').value = 'nenhum';
-
-                    // Reset attributes to 0
-                    const attrs = ['cor', 'for', 'des', 'men', 'alm', 'car'];
-                    attrs.forEach(attr => getEl(`attr-${attr}`).value = 0);
-
-                    // Reset stats to 0
-                    const stats = ['vida', 'def', 'rf', 'rm'];
-                    stats.forEach(stat => getEl(`status-${stat}`).value = 0);
-                    getEl('deaths').value = 0;
-
-                    // Clear dynamic lists
-                    inventoryList.innerHTML = '';
-                    runesList.innerHTML = '';
-                    ritualsList.innerHTML = '';
-
-                    // Reset skills checkboxes and levels
-                    SKILLS.forEach(skill => {
-                        const id = `skill-${skill.toLowerCase().replace(/[\s\/]/g, '-')}`;
-                        const checkbox = getEl(id);
-                        const levelInput = getEl(`${id}-level`);
-                        if (checkbox) checkbox.checked = false;
-                        if (levelInput) levelInput.value = 0;
-                    });
-
-                    // Clear description containers and hide them
-                    classDescriptionContainer.innerHTML = '';
-                    classDescriptionContainer.classList.add('hidden');
-                    raceDescriptionContainer.innerHTML = '';
-                    raceDescriptionContainer.classList.add('hidden');
-                    raceChoicesContainer.innerHTML = '';
-                    raceChoicesContainer.classList.add('hidden');
-
-                    // Reset life roll state
-                    document.body.dataset.lifeRolled = 'false';
-                    lifeRollContainer.classList.add('hidden');
-                    lifeRollResult.innerHTML = '';
-                    
-                    // Reset dracmas
-                    getEl('dracma-b').value = 1;
-                    getEl('dracma-p').value = 1;
-                    getEl('dracma-o').value = 1;
-                    getEl('dracma-d').value = 1;
-                    handleDracmaConversion();
-
-                    // Clear local storage
-                    localStorage.removeItem('draemoraCharacterSheet');
+                    clearAllSheetFields();
                     displayMessageBox('Ficha reiniciada com sucesso!');
-
-                    // Re-initialize dropdowns and other dynamic elements
-                    initDropdown(classSelect, CLASSES);
-                    initDropdown(raceSelect, RACE_DATA);
-                    initSkills();
-                    raceApexesContainer.innerHTML = ''; // Clear apexes
-                    classApexesContainer.innerHTML = ''; // Clear apexes
-                    createApexes(raceApexesContainer, 'race-apex', 4);
-                    createApexes(classApexesContainer, 'class-apex', 4);
-                    updateAllStats(); // Update stats display based on empty inputs
                 });
             } else {
-                confirmBox.style.display = 'flex'; // Show if already exists
+                confirmBox.querySelector('p').textContent = `Tem certeza que deseja reiniciar a ficha? Todos os dados atuais serão perdidos, mas as fichas salvas permanecerão.`;
+                confirmBox.style.display = 'flex';
+            }
+        }
+
+        async function generateCharacterBackground() {
+            const charName = charNameInput.value;
+            const charRace = raceSelect.value;
+            const charClass = classSelect.value;
+            const charDevotion = charDevotionInput.value;
+
+            if (!charName || !charRace || !charClass) {
+                displayMessageBox("Por favor, preencha o Nome, Raça e Classe do personagem para gerar um histórico.");
+                return;
+            }
+
+            generateBackgroundText.textContent = "Gerando...";
+            generateBackgroundSpinner.classList.remove('hidden');
+            generateBackgroundBtn.disabled = true;
+
+            const prompt = `Crie um histórico de personagem de RPG detalhado para um personagem chamado ${charName}, da raça ${charRace} e da classe ${charClass}. Se a devoção for "${charDevotion}", inclua-a no histórico. O histórico deve ser imersivo, com elementos de drama, motivação e como o personagem chegou ao seu ponto atual no mundo de fantasia. Deve ter entre 200 e 300 palavras.`;
+
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Leave as-is for Canvas to provide
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const generatedText = result.candidates[0].content.parts[0].text;
+                    charPersonalBackground.value = generatedText;
+                } else {
+                    displayMessageBox("Não foi possível gerar um histórico. Tente novamente.");
+                }
+            } catch (error) {
+                console.error("Erro ao chamar a API Gemini:", error);
+                displayMessageBox("Ocorreu um erro ao conectar-se com o serviço de geração de histórico. Verifique sua conexão ou tente novamente mais tarde.");
+            } finally {
+                generateBackgroundText.textContent = "Gerar Histórico ✨";
+                generateBackgroundSpinner.classList.add('hidden');
+                generateBackgroundBtn.disabled = false;
+            }
+        }
+
+        async function generateGoalIdeas() {
+            const charName = charNameInput.value;
+            const charRace = raceSelect.value;
+            const charClass = classSelect.value;
+            const currentGoals = goalsTextArea.value;
+            const charDevotion = charDevotionInput.value;
+            const personalBackground = charPersonalBackground.value;
+
+            if (!charName || !charRace || !charClass) {
+                displayMessageBox("Por favor, preencha o Nome, Raça e Classe do personagem para gerar ideias de objetivos.");
+                return;
+            }
+
+            generateGoalsText.textContent = "Gerando...";
+            generateGoalsSpinner.classList.remove('hidden');
+            generateGoalsBtn.disabled = true;
+
+            let prompt = `Com base no personagem a seguir, gere 3-5 ideias de objetivos de RPG que sejam interessantes e que possam impulsionar a narrativa. Os objetivos devem ser curtos e diretos, focando em missões ou aspirações que o personagem possa ter.`;
+            prompt += `\n\nNome: ${charName}\nRaça: ${charRace}\nClasse: ${charClass}`;
+            if (charDevotion) prompt += `\nDevoção: ${charDevotion}`;
+            if (personalBackground) prompt += `\nHistórico Pessoal: ${personalBackground}`;
+            if (currentGoals) prompt += `\nObjetivos Atuais: ${currentGoals}`;
+            prompt += `\n\nFormato da resposta: Uma lista numerada de objetivos.`;
+
+
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Leave as-is for Canvas to provide
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const generatedText = result.candidates[0].content.parts[0].text;
+                    goalsTextArea.value += (goalsTextArea.value ? "\n\n--- Novas Ideias ---\n" : "") + generatedText;
+                } else {
+                    displayMessageBox("Não foi possível gerar ideias de objetivos. Tente novamente.");
+                }
+            } catch (error) {
+                console.error("Erro ao chamar a API Gemini para objetivos:", error);
+                displayMessageBox("Ocorreu um erro ao conectar-se com o serviço de geração de objetivos. Verifique sua conexão ou tente novamente mais tarde.");
+            } finally {
+                generateGoalsText.textContent = "Gerar Ideias de Objetivos ✨";
+                generateGoalsSpinner.classList.add('hidden');
+                generateGoalsBtn.disabled = false;
             }
         }
 
 
         function exportPDF() {  
             const sheet = document.getElementById('character-sheet');
-            const charName = getEl('char-name').value || 'personagem_draemora';
+            const charName = charNameInput.value || 'personagem_draemora';
             const options = { margin: 0.5, filename: `${charName.replace(/\s+/g, '_').toLowerCase()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0D1B2A' }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
             html2pdf().from(sheet).set(options).save();
            }
 
         // --- EVENT LISTENERS ---
-        getEl('avatar-upload').addEventListener('change', (event) => { const file = event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (e) => getEl('avatar-preview').src = e.target.result; reader.readAsDataURL(file); } });
+        getEl('avatar-upload').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => getEl('avatar-preview').src = e.target.result;
+                reader.readAsDataURL(file);
+            }
+        });
         classSelect.addEventListener('change', handleClassSelection);
         raceSelect.addEventListener('change', handleRaceSelection);
         ['armor-type', 'shield-type', 'deaths'].forEach(id => getEl(id).addEventListener('change', updateAllStats));
         ['dracma-b', 'dracma-p', 'dracma-o', 'dracma-d'].forEach(id => getEl(id).addEventListener('input', handleDracmaConversion));
         rollLifeBtn.addEventListener('click', rollLife);
-        getEl('save-button').addEventListener('click', saveData);
+        
+        saveCurrentButton.addEventListener('click', saveCurrentSheet); // New event listener for "Salvar Ficha Atual"
+        saveAsButton.addEventListener('click', saveDataPrompt);        // Renamed event listener for "Salvar Ficha (Como)"
+
         getEl('pdf-button').addEventListener('click', exportPDF);
-        getEl('reset-button').addEventListener('click', resetData); // New reset button event listener
+        getEl('reset-button').addEventListener('click', resetData);
         getEl('add-inventory-item').addEventListener('click', addInventoryItem);
         getEl('add-rune-item').addEventListener('click', addRune);
         getEl('add-ritual-item').addEventListener('click', addRitual);
+        generateBackgroundBtn.addEventListener('click', generateCharacterBackground);
+        generateGoalsBtn.addEventListener('click', generateGoalIdeas);
 
-        // --- INICIALIZAÇÃO DA FICHA ---
-        initDropdown(classSelect, CLASSES);
-        initDropdown(raceSelect, RACE_DATA);
-        initSkills();
-        createApexes(raceApexesContainer, 'race-apex', 4);
-        createApexes(classApexesContainer, 'class-apex', 4);
-        loadData();
+        // Event listener for current life input
+        statusCurrentVida.addEventListener('input', handleCurrentVidaChange);
+        
+        // Event listener for theme toggle
+        themeToggleButton.addEventListener('click', toggleTheme);
+
+        // Event listeners for manage sheets modal
+        manageSheetsButton.addEventListener('click', () => {
+            displaySavedSheets();
+            manageSheetsModal.classList.remove('hidden');
+        });
+        closeManageSheetsModal.addEventListener('click', () => {
+            manageSheetsModal.classList.add('hidden');
+        });
+
+        // Delegated event listener for load/delete buttons inside the modal
+        savedSheetsList.addEventListener('click', (e) => {
+            const button = e.target.closest('button');
+            if (button) {
+                const sheetName = button.dataset.sheetName;
+                const action = button.dataset.action;
+                if (action === 'load') {
+                    loadSheet(sheetName);
+                } else if (action === 'delete') {
+                    deleteSheet(sheetName);
+                }
+            }
+        });
+
+        
+        // --- INITIALIZATION ---
+        // Load all sheets and apply theme on startup
+        loadAllSheetsFromLocalStorage();
+        const savedTheme = localStorage.getItem('draemoraTheme') || 'dark';
+        applyTheme(savedTheme);
+
+        // Load the last loaded sheet, or a blank one if none selected/available
+        const lastLoaded = localStorage.getItem('lastLoadedSheet');
+        if (lastLoaded && allCharacterSheets[lastLoaded]) {
+            loadSheet(lastLoaded);
+        } else if (Object.keys(allCharacterSheets).length > 0) {
+            // If no specific last loaded, load the first available sheet
+            loadSheet(Object.keys(allCharacterSheets)[0]);
+        } else {
+            // Otherwise, initialize a fresh sheet
+            initDropdown(classSelect, CLASSES);
+            initDropdown(raceSelect, RACE_DATA);
+            initSkills();
+            createApexes(raceApexesContainer, 'race-apex', 4);
+            createApexes(classApexesContainer, 'class-apex', 4);
+            clearAllSheetFields(); // Ensures a completely fresh start
+        }
     });
     </script>
 </body>
