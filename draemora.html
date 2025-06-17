@@ -932,7 +932,7 @@
         const RACES = {
             "Humano": "Versáteis e adaptáveis, os humanos compensam a ausência de talentos sobrenaturais com inteligência, força de vontade e iniciativa. Ganham bônus em perícias ou talentos à escolha.",
             "Vampiro": "Criaturas amaldiçoadas pela sede de sangue. Possuem regeneração sobrenatural, charme hipnótico e resistência à dor, mas são vulneráveis à luz e fogo.",
-            "Dampiro": "Nascidos da união entre humanos e vampiros, equilibram força sobrenatural com controle emocional. São ágeis e intuitivos, mas carregam instabilidade interior.",
+            "Dampiro": "Nascidos da união entre humanos e vampiros, equilibram força sobrenatural com controle emocional. São ágiles e intuitivos, mas carregam instabilidade interior.",
             "Licantropo": "Bestiais e poderosos, licantropos alternam entre forma humana e lupina. Recebem bônus em combate físico e sentidos aguçados, mas lutam contra a fúria interior.",
             "Meio-Demônio": "Marcados pelo inferno, possuem aparência distorcida e poderes elementais sombrios. Carregam o estigma do caos, mas também uma força aterradora.",
             "Meio-Celestial": "Filhos de entidades divinas. Possuem aura sagrada, talentos de cura e proteção, mas vivem sob constante julgamento moral e pressão ética.",
@@ -1003,8 +1003,8 @@
                 pesada: { def: 10, thresholds: { damaged: 3, broken: 6 } }
             },
             shield: {
-                pequeno: { rf: 2, thresholds: { damaged: 1, broken: 2 } },
-                grande: { rf: 5, thresholds: { damaged: 2, broken: 4 } }
+                pequeno: { rf: 2, rm: 2, thresholds: { damaged: 1, broken: 2 } }, // Added rm
+                grande: { rf: 5, rm: 5, thresholds: { damaged: 2, broken: 4 } } // Added rm
             }
         };
 
@@ -1144,9 +1144,13 @@
                 let state = 'Inteiro';
                 if(deaths >= shieldData.thresholds.broken) state = 'Quebrado';
                 else if(deaths >= shieldData.thresholds.damaged) state = 'Danificado';
-                shieldDisplay.textContent = `Estado: ${state} (+${state === 'Quebrado' ? 0 : shieldData.rf} RF)`;
+                // Updated to show both RF and RM for shields
+                shieldDisplay.textContent = `Estado: ${state} (+${state === 'Quebrado' ? 0 : shieldData.rf} RF, +${state === 'Quebrado' ? 0 : shieldData.rm} RM)`;
                 shieldDisplay.className = `text-sm mt-1 text-center state-${state.toLowerCase().replace('o', '')}`;
-                if(state !== 'Quebrado') rf += shieldData.rf;
+                if(state !== 'Quebrado') {
+                    rf += shieldData.rf;
+                    rm += shieldData.rm; // Add shield RM to total RM
+                }
             } else {
                 shieldDisplay.textContent = '';
             }
