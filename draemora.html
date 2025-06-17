@@ -302,6 +302,25 @@
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
+
+        /* Estilo para o botão do olho */
+        .info-eye-button {
+            background: none;
+            border: none;
+            color: var(--yellow-accent); /* Cor do olho */
+            cursor: pointer;
+            font-size: 1rem;
+            margin-left: 0.5rem;
+            padding: 0;
+            transition: color 0.2s ease;
+        }
+        .info-eye-button:hover {
+            color: var(--primary-btn-bg); /* Mudar cor ao passar o mouse */
+        }
+        /* Estilo para o modal de descrição */
+        #description-modal {
+            animation: fadeIn 0.3s forwards;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-200 p-4 md:p-8 relative" data-life-rolled="false">
@@ -312,7 +331,7 @@
         <header class="card p-4 flex flex-col md:flex-row items-start gap-6">
             <div class="relative group flex-shrink-0">
                 <input type="file" id="avatar-upload" class="hidden" accept="image/*">
-<img id="avatar-preview" src="https://placehold.co/128x192/0D1B2A/E0E1DD?text=Avatar" alt="Avatar do Personagem" class="w-32 h-48 object-cover border-4 border-yellow-500 cursor-pointer group-hover:border-yellow-300 transition-all duration-300 rounded-lg">
+                <img id="avatar-preview" src="https://placehold.co/128x192/0D1B2A/E0E1DD?text=Avatar" alt="Avatar do Personagem" class="w-32 h-48 object-cover border-4 border-yellow-500 cursor-pointer group-hover:border-yellow-300 transition-all duration-300 rounded-lg">
                 <div class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer" onclick="document.getElementById('avatar-upload').click();">
                     <i class="fas fa-camera text-2xl"></i>
                 </div>
@@ -642,6 +661,15 @@
     <!-- Container para a caixa de mensagem personalizada -->
     <div id="message-box-container"></div>
 
+    <!-- Modal para Descrição de Talentos/Máculas -->
+    <div id="description-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[1000] hidden">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center max-w-md w-full mx-auto border border-gray-600">
+            <h2 id="description-modal-title" class="font-runic text-2xl text-yellow-400 mb-4"></h2>
+            <p id="description-modal-content" class="text-white text-lg mb-4 text-left whitespace-pre-wrap"></p>
+            <button class="btn-primary py-2 px-4 rounded-lg" id="close-description-modal">Fechar</button>
+        </div>
+    </div>
+
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -685,35 +713,206 @@
         const saveCurrentButton = getEl('save-current-button'); // New button reference
         const saveAsButton = getEl('save-as-button'); // Renamed button reference
 
+        // Elementos do novo modal de descrição
+        const descriptionModal = getEl('description-modal');
+        const descriptionModalTitle = getEl('description-modal-title');
+        const descriptionModalContent = getEl('description-modal-content');
+        const closeDescriptionModalBtn = getEl('close-description-modal');
+
 
         // --- DEFINIÇÕES DE DADOS ---
         const HUMAN_TALENTS = ['Adaptável', 'Diplomático', 'Conhecimento Universal', 'Estratégico', 'Aprendizado Acelerado', 'Corajoso', 'Foco Imparável'];
         const HUMAN_MACULAS = ['Desconfiado', 'Curioso em Excesso', 'Imprudente', 'Medroso', 'Dependente de Alianças', 'Inseguro', 'Teimoso', 'Frágil'];
         const VAMPIRE_TALENTS = ['Charme Vampírico', 'Regeneração Sanguínea', 'Transformação em Névoa', 'Velocidade Sobrenatural', 'Imortalidade Sob o Véu', 'Força Devastadora', 'Obra Sobrenatural'];
-        const VAMPIRE_MACULAS_OPTIONAL = ['Fraqueza à Luz Solar', 'Vulnerável a Prata', 'Fome Incontrolável', 'Controle Ancestral', 'Alvo de Caçadores', 'Alergia ao Alho', 'Sombras do Passado'];
+        const VAMPIRE_MACULAS_OPTIONAL = ['Fraqueza à Luz Solar', 'Vulnerável a Prata', 'Fome incontrolável', 'Controle Ancestral', 'Alvo de Caçadores', 'Alergia ao Alho', 'Sombras do Passado'];
         const DAMPIRO_TALENTS = ['Regeneração Rápida', 'Olhar Hipnótico', 'Visão Noturna Aprimorada', 'Predador Ágil', 'Caçador de Sombras', 'Golpe Vampírico', 'Intuição Sombria'];
         const DAMPIRO_MACULAS = ['Fascinação por Sangue', 'Vulnerabilidade à Luz Solar', 'Conflito Interno', 'Ecos Sombrio', 'Instinto Selvagem', 'Avidez pelo Poder', 'Aversão a Símbolos Sagrados'];
         const LICANTROPO_TALENTS = ['Guardião da Floresta', 'Força Ancestral', 'Sentinela Selvagem', 'Rugido Primordial', 'Transformação Ágil', 'Caminhante Silvestre'];
-        const LICANTROPO_MACULAS = ['Marcas da Dor', 'Instinto Predatório', 'Fúria da Natureza', 'Sangue das Feras', 'Vulnerabilidade Espiritual', 'Ligação Lunas'];
+        const LICANTROPO_MACULAS = ['Marcas da Dor', 'Instinto Predatório', 'Fúria da Natureza', 'Sangue das Feras', 'Vulnerabilidade Espiritual', 'Ligação Lunar']; // Fixed typo Lunas to Lunar
         const MEIO_DEMONIO_TALENTS = ['Chamas Profanas', 'Lâmina Sombria', 'Regeneração Profana', 'Aura de Medo', 'Lados opostos', 'Conjurador Infernal'];
         const MEIO_DEMONIO_MACULAS = [ 'Corrupção Crescente', 'Sede de Poder', 'Vulnerabilidade a Magia Divina', 'Marca do Inferno', 'Sussurros Profanos', 'Instabilidade' ];
-        const MEIO_CELESTIAL_TALENTS = [ 'Força Transcendental', 'Visão Sagrada', 'Vontade Inquebrável', 'Guia Luminoso', 'Afinidade com Magia', 'Lâmina de Luz', 'Presença Inspiradora', 'Vínculo Eterno (Cena)' ];
+        const MEIO_CELESTIAL_TALENTS = [ 'Força Transcendental', 'Visão Sagrada', 'Vontade Inquebrável', 'Guia Luminoso', 'Afinidade com Magia', 'Lâmina de Luz', 'Presença Inspiradora', 'Vínculo Eterno(Cena)' ];
         const MEIO_CELESTIAL_MACULAS = [ 'Deslocado', 'Exaustão Divina', 'Ligação com o Domínio', 'Presença Arrebatadora', 'Fragilidade Humana', 'Sombra do Divino', 'Rejeição Celestial', 'Cicatrizes do Sangue Divino' ];
-        const COLOSSO_TALENTS = [ 'Interferência', 'Reator Mágico', 'Reforço Energético', 'Última Conjuração', 'Eficiência' ];
+        const COLOSSO_TALENTS = [ 'Interferência', 'Reator Mágico', 'Reforço Energético', 'Ultima Conjuração', 'Eficiência' ];
         const COLOSSO_MACULAS = [ 'Sobrecarga Instável', 'Interferência Mágica', 'Desconexão do Núcleo', 'Foco Restrito', 'Dependência Energética Crítica' ];
-        const ASTRIS_TALENTS = [ 'Desejo Cadente', 'Coração de Nebulosa', 'Pulsar Estelar', 'Viajante do Vácuo', 'Voz do Abismo Estelar', 'Movimento Dimensional', 'Gravidade Anômala' ];
-        const ASTRIS_MACULAS = [ 'Reflexo Cósmico', 'Vazio Corporal', 'Pulsar Estelar', 'Antena Estelar', 'Vulnerabilidade ao Eclipse' ];
-        const ECLIPTICO_TALENTS = [ 'Caminhante das Extremidades', 'Aura do Crepúsculo', 'Voz do Infinito', 'Bênção e Maldição', 'Reflexo do Caos', 'Asas do Falcão de Fogo' ];
+        // Updated Astris talents as per user prompt
+        const ASTRIS_TALENTS = [ 'Desejo Cadente', 'Coração de Nebulosa', 'Pulso Estelar', 'Viajor do Vácuo', 'Voz do Abismo Estelar' ];
+        const ASTRIS_MACULAS = [ 'Reflexo Cósmico', 'Vazio Corporal', 'Antena Estelar', 'Vulnerabilidade ao Eclipse' ]; // Pulso Estelar removed from Maculas
+        const ECLIPTICO_TALENTS = [ 'Caminhante das Extremidades', 'Aura do Crepúsculo', 'Voz do Infinito', 'Bênção e Maldição', 'Reflexo do Caos', 'Asas do falcão de fogo' ];
         const ECLIPTICO_MACULAS = [ 'Instabilidade Existencial', 'Rejeição Cósmica', 'Fragilidade de Duas Naturezas', 'Conflito de Energias', 'Tentação Interna', 'Rejeição Social' ];
-        const ZALKHA_TALENTS = [ 'Toque Devorador', 'Forma Assimilada (Cena)', 'Língua Predatória', 'Grito Supersônico', 'Sangue Venenoso', 'Glândulas Regenerativas' ];
+        const ZALKHA_TALENTS = [ 'Toque Devorador', 'Forma Assimilada (cena)', 'Língua Predatória', 'Grito Supersônico', 'Sangue Venenoso', 'Glândulas Regenerativas' ];
         const ZALKHA_MACULAS = [ 'Vulnerabilidade ao Fogo', 'Predadores Solitários', 'Ecos da Mudança', 'Metabolismo Instável', 'Faro da Presa' ];
         const MORTALHAS_TALENTS = [ 'Golpe da Dívida Impagável', 'Olhar da Última Noite', 'Garras de Execução (Abutre)', 'Correntes Invisíveis', 'Reforçar o Pacto', 'Rastro Espiritual' ];
         const MORTALHAS_MACULAS = [ 'Fobia Solar', 'Não é bem vindo', 'Fragmentos da Outra Vida', 'Voz da Morte', 'Contrato Infame', 'Rachaduras do Véu' ];
-        const CRONIDAS_TALENTS = [ 'Consciência Temporal', 'Visão do Futuro', 'Preservação de Forma', 'Aceleração Mental', 'Inércia Desviada', 'Distorção de Gravidade', 'Linha Quebrada' ];
-        const CRONIDAS_MACULAS = [ 'Eco Temporal', 'Deslocamento Mental', 'Temporalmente Anacrônico', 'Memória Fragmentada', 'Raiva da Realidade', 'Vínculo com o Tempo', 'Rejeitado pelo Presente' ];
+        // Updated Crônidas talents and maculas as per user prompt
+        const CRONIDAS_TALENTS = [ 'Salto no Tempo (1 uso por cena)', 'Passo Fora do Tempo (1 uso por cena)', 'Memória Perfeita', 'Reversão Instantânea (1 uso por cena)', 'Intuição Futura (passiva, mas só funciona 1 vez por cena)' ];
+        const CRONIDAS_MACULAS = [ 'Corpo Preso no Presente', 'Fluxo Inconstante', 'Ecos Perdidos', 'Paradoxo Crescente', 'Distorção da Realidade' ];
         const ELFO_NEGRO_TALENTS = [ 'Mentor do Pacto', 'Língua de Elfo', 'Sombras Silenciosas', 'Veneno Cultural', 'Olho do Traidor' ];
         const ELFO_NEGRO_MACULAS = [ 'Maldito Pela Luz', 'Rancor Ancestral', 'Vínculo Obsessivo', 'Eco da Promessa Quebrada', 'Sombra do Passado' ];
         
+        // Objeto com todas as descrições de Talentos e Máculas
+        const TALENT_MACULA_DESCRIPTIONS = {
+            'Adaptável': 'Receba +2 em um teste de atributo à sua escolha, uma vez por cena.',
+            'Diplomático': 'Ganha +2 em testes de Diplomacia e Enganação, tornando-se mais eficaz em negociações.',
+            'Conhecimento Universal': 'Pode aprender uma magia de qualquer Domínio ou um ritual de qualquer Patrono durante a criação do personagem.',
+            'Estratégico': 'Ao analisar uma situação por 1 turno, ganha vantagem no próximo teste relacionado a essa ação.',
+            'Aprendizado Acelerado': 'Toda vez que cumprir um momento ápice de classe, aprende uma nova perícia.',
+            'Corajoso': 'Ganha +3 em testes para resistir a efeitos de medo ou intimidação.',
+            'Foco Imparável': 'Uma vez por cena, pode ignorar penalidades em testes de Mente ou Alma por 2 rodadas.',
+            'Frágil': 'Recebe +1 de dano de qualquer fonte física.',
+            'Desconfiado': 'Sofre -2 em interações sociais com desconhecidos ou novas alianças.',
+            'Curioso em Excesso': 'Ao encontrar algo desconhecido, deve fazer um teste de Mente. Se falhar, será compelido a investigar, mesmo em situações perigosas.',
+            'Imprudente': 'Sofre -1 em testes de resistência contra armadilhas ou situações perigosas devido à sua tendência de agir sem pensar.',
+            'Medroso': 'Em situações de terror extremo, sofre -3 em testes de resistência mental.',
+            'Dependente de Alianças': 'Quando sozinho, recebe -1 em todos os testes até formar uma parceria novamente.',
+            'Inseguro': 'Após falhar em um teste, sofre -1 em todos os testes até obter um sucesso crítico.',
+            'Teimoso': 'Ignora conselhos de aliados e sofre penalidade de -2 em testes sociais relacionados a trabalho em equipe.',
+            'Charme Vampírico': 'A habilidade de manipular mentes dá +2 em testes de Persuasão e Enganação.',
+            'Regeneração Sanguínea': 'Seus ataques corpo a corpo bem executados recuperam 1d4 de vida, se for crítico recebe 1d12.',
+            'Transformação em Névoa': 'Uma vez por cena, transforma-se em névoa para escapar ou se mover furtivamente, ganhando +2 em testes de Furtividade e Reflexos.',
+            'Velocidade Sobrenatural': 'Ganha +2 em testes de Reflexos e Destreza em combates.',
+            'Imortalidade Sob o Véu': 'Pode sobreviver a ferimentos fatais com um teste de Corpo bem-sucedido, retornando com 1d6 de Vida.',
+            'Força Devastadora': 'Em combate corpo a corpo, adiciona +1d6 de dano aos ataques físicos.',
+            'Obra Sobrenatural': 'Os rituais da Camada da Luxuria e Runas de sangue recebem vantagem em suas conjurações',
+            'Sede de Sangue (Hereditária)': 'Necessita beber sangue regularmente; falhar em saciar essa necessidade causa -2 em todos os testes até se alimentar',
+            'Fraqueza à Luz Solar': 'Sob exposição direta à luz solar, sofre 1d6 de dano por rodada.',
+            'Vulnerável a Prata': 'Recebe +2 de dano ao ser atingido por armas ou objetos de prata.',
+            'Fome incontrolável': 'Em situações de estresse, deve-se realizar um teste de Mente para não atacar o aliado mais próximo.',
+            'Controle Ancestral': 'Vampiros mais antigos podem subjugar sua vontade, forçando ações contra sua vontade com um teste resistido.',
+            'Alvo de Caçadores': 'Organizações caçam incessantemente vampiros, dificultando viagens e interações sociais.',
+            'Alergia ao Alho': 'Estar próximo a alho reduz -1 em todos os testes devido ao desconforto causado.',
+            'Sombras do Passado': 'A memória de séculos de vida pesa na mente, causando penalidades em testes de Mente em situações de pressão emocional.',
+            'Regeneração Rápida': 'Recupera 1d6 de Vida temporária ao final de cada turno.',
+            'Olhar Hipnótico': 'Uma vez por cena, force um inimigo a realizar um teste de Alma (D.A 7+ sua Mente ou Alma) . Se falhar, ele fica desorientado por 1 rodada.',
+            'Visão Noturna Aprimorada': 'Ignora penalidades por escuridão e pode detectar presenças ocultas em um raio de 10 metros.',
+            'Predador Ágil': 'Recebe +2 em testes de Destreza para Esquivas e manobras acrobáticas.',
+            'Caçador de Sombras': 'Ganha vantagem em testes de rastreamento e perseguição durante a noite.',
+            'Golpe Vampírico': 'Três vez por combate, pode causar +1d12 de dano adicional em um ataque corpo a corpo.',
+            'Intuição Sombria': 'Recebe +2 em testes de Intuição para detectar mentiras ou intenções hostis.',
+            'Fascinação por Sangue': 'Diante de ferimentos abertos ou cheiros fortes de sangue, deve passar em um teste de Mente (D.A 10) para não agir de forma impulsiva.',
+            'Vulnerabilidade à Luz Solar': 'Embora não queime, sofre -2 em testes físicos durante o dia.',
+            'Conflito Interno': 'Em momentos de decisões críticas, deve-se realizar um teste de Alma (D.A 10) para evitar hesitar.',
+            'Ecos Sombrio': 'Sussurros de ancestrais vampíricos ocasionalmente interferem em seus pensamentos, impondo -1 em testes de concentração (conjurações estão inclusas).',
+            'Instinto Selvagem': 'Em situações de perigo extremo, deve passar em um teste de Mente (D.A 7) para não atacar impulsivamente.',
+            'Avidez pelo Poder': 'Tem dificuldade em aceitar ordens de figuras de autoridade, sofrendo -2 em testes de Diplomacia com líderes.',
+            'Aversão a Símbolos Sagrados': 'Fica desconfortável próximo a símbolos sagrados, sofrendo -1 em todos os testes enquanto estiver a até 3 metros deles.',
+            'Guardião da Floresta': 'Pode invocar raízes ou cipós para imobilizar um inimigo uma vez por cena (teste de Alma contra Destreza do alvo).',
+            'Força Ancestral': 'Quando assume a Forma Ancestral, seus ataques corpo a corpo causam +1d8 de dano adicional.',
+            'Sentinela Selvagem': 'Pode detectar intrusos ou ameaças naturais num raio de 10 metros, mesmo através de obstáculos.',
+            'Rugido Primordial': 'Uma vez por cena, solta um rugido que impõe medo. Inimigos devem passar em um teste de Alma (D.A 7+ seu Corpo), se falharem ficam amedrontados por 1 rodada.',
+            'Transformação Ágil': 'Pode alternar entre forma humana e Ancestral sem custo de ação.',
+            'Caminhante Silvestre': 'Ignora terreno difícil e recebe +2 em testes de Atletismo e Furtividade em áreas naturais.',
+            'Marcas da Dor': 'A transformação Bestial é dolorosa e consome energia. Perde 1d6 de Vida ao assumir essa forma.',
+            'Instinto Predatório': 'Deve passar em um teste de Mente para não atacar criaturas feridas ou mais fracas.',
+            'Fúria da Natureza': 'Ao ver a natureza sendo destruída, entra em estado de raiva, sofrendo -2 em testes de Mente para manter o controle.',
+            'Sangue das Feras': 'Sua aparência selvagem e comportamento instintivo causam -2 em interações sociais com humanos.',
+            'Vulnerabilidade Espiritual': 'Magias de proteção contra feras ou espíritos afetam você, impondo -2 em testes de resistência.',
+            'Ligação Lunar': 'Em noites de lua cheia, deve passar em um teste de Alma para não se transformar involuntariamente.',
+            'Chamas Profanas': 'Conjura uma explosão de fogo infernal, causando 2d10 de dano em área, como ação bônus, o limite é igual a sua Alma ou Mente o que for maior.',
+            'Lâmina Sombria': 'Cria uma arma feita de pura escuridão (1d12+Alma/Mente de dano extra) que ignora armaduras Leves, durante (Alma) rodadas.',
+            'Regeneração Profana': 'Recupera metade dos pontos de Vida ao eliminar um inimigo.',
+            'Aura de Medo': 'Inimigos a até 3 metros devem passar em um teste de Alma (Dificuldade 10+ Sua mente/alma) ou ficam amedrontados (-2 em testes de Carisma, Mente e Alma).',
+            'Lados opostos': 'Escolha um talento da raça Humano. Alternativamente você pode escolher rolar ataques físicos com Alma (2d6+Alma).',
+            'Conjurador Infernal': 'Sempre que conjurar um ritual com a Coesão o ritual recebe +1 dado de dano ou cura.',
+            'Corrupção Crescente': 'A cada uso de magia infernal, sofre -1 em testes sociais até o próximo descanso.',
+            'Sede de Poder': 'Deve passar em um teste de Alma (Dificuldade 9) para resistir a pactos fáceis.',
+            'Vulnerabilidade a Magia Divina': 'Sofre +2 de dano de fontes sagradas.',
+            'Marca do Inferno': 'Sua aparência demoníaca impõe -2 em interações sociais com humanos.',
+            'Sussurros Profanos': 'Constantemente ouve vozes demoníacas, impondo -1 em Concentração.',
+            'Instabilidade': 'Falhar em rituais pode causar efeitos aleatórios e perigosos.',
+            'Força Transcendental': 'Adicione +2 em testes de Força ou Corpo relacionados a ações físicas e atléticas por duas rodadas.',
+            'Visão Sagrada': 'Enxerga além do véu mortal, detectando presenças invisíveis ou mágicas em até 9 metros.',
+            'Vontade Inquebrável': 'Receba +2 em resistências contra controle mental ou medo, duas vezes por cena.',
+            'Guia Luminoso': 'Uma vez por cena, conceda a um aliado próximo +2 em um teste de Alma ou Mente.',
+            'Afinidade com Magia': 'Recebe uma Runa Elemental adicional.',
+            'Lâmina de Luz': 'Uma vez por cena, o Meio-Celestial pode invocar uma arma luminosa (espada ou lança, por exemplo). Essa arma causa 1d10+6 de dano mágico e ignora 4 de resistência contra seus ataques, Se fizer isso seus ataques passam a serem realizados com Mente + Luta, essa arma pode ser usada (Mente) vezes por cena.',
+            'Presença Inspiradora': 'Aliados em um raio de 5 metros recebem +1 em todos os testes relacionados a Alma enquanto estiverem na presença do Meio-Celestial.',
+            'Vínculo Eterno(Cena)': 'Escolha um aliado. ambos recuperam +2d4 Vida adicional, durante 2 rodadas.',
+            'Deslocado': 'O Meio-Celestial sofre -2 em interações sociais com mortais que o consideram alienígena ou ameaçador.',
+            'Exaustão Divina': 'Usar Runas sobrecarregadas causam -1 ponto de Vida adicional por conjuração.',
+            'Ligação com o Domínio': 'A conexão com o divino impede o Meio-Celestial de acessar e realizar rituais infernais',
+            'Presença Arrebatadora': 'A intensidade de sua presença causa desconforto em aliados, impondo -1 em testes sociais quando tenta liderar,motivar, acalmar um grupo.',
+            'Fragilidade Humana': 'Sua mortalidade o torna mais vulnerável a doenças ou venenos, recebendo +1 de dano de fontes não mágicas.',
+            'Sombra do Divino': 'Criaturas malignas ou e profanas detectam sua presença a até 15 metros, dificultando a furtividade ou emboscadas.',
+            'Rejeição Celestial': 'Você é constantemente atormentado por sonhos ou visões de julgamento divino, sofrendo -1 em testes de Mente para resistir a estresse emocional.',
+            'Cicatrizes do Sangue Divino': 'Sempre que sofre um ataque mágico de ritual, o Meio-Celestial recebe +3 de dano adicional, refletindo a tensão entre seu sangue mortal e divino.',
+            'Interferência': 'Sempre que uma magia elemental for conjurada dentro de um raio de 10 metros, o Colosso pode provocar uma interferência arcana, impondo desvantagem no teste de conjuração — desde que o elemento conjurado coincida com o elemento do seu Núcleo.',
+            'Reator Mágico': 'Ao ser reduzido a menos de 50% de sua Vida, o Núcleo do Colosso entra em Modo de Sobrevivência, regenerando 2 PE por rodada durante 3 rodadas. Após esse período, o Núcleo entra em estado de resfriamento, desabilitando a conjuração de magias por 1 rodada.',
+            'Reforço Energético': 'O Colosso pode gastar 2 PE para conceder a si mesmo ou a um aliado adjacente +2 em Defesa ou +1 em testes de resistência por 2 rodadas.',
+            'Ultima Conjuração': 'O Colosso pode ativar a runa em seu peito para realizar uma Última Conjuração. Ele pode gastar todos os seus Pontos de Energia (PE) para potencializar essa magia final, adicionando +2 dados de dano para cada 10 PE gastos.',
+            'Eficiência': 'Uma vez por dia, o Colosso pode escolher uma Runa para ser conjurada como Ação Bônus.',
+            'Sobrecarga Instável': 'Sempre que o Colosso realizar uma magia crítica (12 no teste de conjuração), seu núcleo sofre estresse, causando 1d4 de dano ao próprio Colosso.',
+            'Interferência Mágica': 'Em ambientes com magia instável (como zonas corrompidas ou de alta densidade mágica), o Colosso sofre -4 em testes de conjuração e resistência.',
+            'Desconexão do Núcleo': 'Se ficar sem recarregar PE por mais de 3 cenas, o Núcleo do colosso começa a quebrar…',
+            'Foco Restrito': 'O núcleo do Colosso está tão sintonizado ao seu Elemento Runico que ele sofre desvantagem em resistência contra magias de Elementos Runicos opostos',
+            'Dependência Energética Crítica': 'Recuperar PE requer mais esforço. Em vez de recuperar automaticamente ao se conectar a fontes mágicas, o Colosso precisa passar em um teste de Núcleo (dificuldade variável).',
+            'Desejo Cadente': 'Uma vez por sessão, ao conjurar uma magia ou realizar um feito grandioso, um aliado próximo pode fazer um pedido ao Astris. O pedido concede: +2 em um teste. Cura de 2d4. Vislumbre do futuro (o mestre pode dar um aviso ou dica extra).',
+            'Coração de Nebulosa': 'Você pode brilhar com força e ofuscar todos os inimigos próximos, impondo -2 em testes de ataque por 1 rodada. Se fizer isso, fica visível mesmo através de paredes ou portais por 1 cena.',
+            'Pulso Estelar': 'Após ser ferido, você pode liberar uma onda de poeira cósmica. Inimigos a até 3 metros sofrem 1d6 de dano e recuam 1 metro.',
+            'Viajor do Vácuo': 'Você ignora terrenos difíceis e pode caminhar em superfícies verticais enquanto sob a luz das estrelas. Em ambientes fechados, tem +2 em Furtividade devido à sua leveza antigravitacional.',
+            'Voz do Abismo Estelar': 'Uma vez por cena, pode invocar ecos de uma estrela morta. O alvo deve fazer um teste de Mente (D.A 9) ou ficará paralisado em terror existencial por 1 turno.',
+            'Reflexo Cósmico': 'Espelhos, câmeras ou magias de detecção não mostram seu rosto — apenas uma imagem distorcida do cosmos. Isso causa desconfiança (-2 em interações com quem vê isso).',
+            'Vazio Corporal': 'Seu corpo não mantém estrutura estável por muito tempo. Em cenas longas, você sofre -1 em testes físicos até descansar.',
+            'Antena Estelar': 'Você capta vozes de estrelas mortas — às vezes no meio de uma conversa normal. Role 1d6 ao fazer testes sociais: em resultado 1, sua resposta é incompreensível (mesmo se for genial).',
+            'Vulnerabilidade ao Eclipse': 'Durante cenas sob eclipses (ou escuridão total), você sofre -4 em todos os testes até se afastar da zona.',
+            'Caminhante das Extremidades': 'Se conjurar Arma Sagrada do Bem e do Mal você pode fazer seus ataques usando Alma ou Mente o que for maior.',
+            'Aura do Crepúsculo': 'Uma vez por cena, o Eclíptico cria uma aura de 5 metros que reduz a precisão de ataques inimigos em -2 e concede +1 de Defesa aos aliados na área.',
+            'Voz do Infinito': 'A voz do Eclíptico reverbera tanto com a autoridade celestial quanto com a malícia demoníaca, concedendo +2 em testes de Diplomacia ou Intimidação.',
+            'Bênção e Maldição': 'Se escolheu Segredos Profanados Pela Luz, suas magias e rituais causam mais 1 dado de dano.',
+            'Reflexo do Caos': 'Sempre que o Eclíptico sofre um ataque crítico, ele pode imediatamente contra-atacar, recebendo vantagem em seu ataque.',
+            'Asas do falcão de fogo': 'Até duas vezes por cena o Eclíptico pode erguer asas mágicas, podendo assim conseguir voar livremente pelo dobro do seu movimento para cima ou para baixo, podendo também ser usada livremente em uma cena desde que seja narrativo e não mecânico.',
+            'Instabilidade Existencial': 'O Eclíptico sofre -2 em testes de Alma sempre que enfrenta situações de estresse emocional extremo.',
+            'Rejeição Cósmica': 'Criaturas ligadas aos céus ou inferno frequentemente o percebem como uma ameaça ou aberração, atacando-o ou rejeitando-o automaticamente.',
+            'Fragilidade de Duas Naturezas': 'Sempre que o Eclíptico recebe dano mágico de criaturas celestes ou infernais, ele sofre +1d4 de dano adicional, independente da fonte.',
+            'Conflito de Energias': 'Usar magias e rituais em uma mesma cena causa -2 em todos os testes até que o Eclíptico realize um descanso.',
+            'Tentação Interna': 'O Eclíptico ouve sussurros constantes de suas metades opostas, tentando-o a ceder completamente a uma delas. Em momentos críticos, deve realizar um teste de Mente para resistir ao caos ou à ordem absoluta.',
+            'Rejeição Social': 'Humanos e outras raças mortais frequentemente o veem como antinatural, impondo -2 em interações sociais com aqueles que não o conhecem bem.',
+            'Toque Devorador': 'Suas escamas secretam ácido ao comando. seus golpes corpo à corpo causam +4 de dano físico (ácido).',
+            'Forma Assimilada (cena)': 'Após estudar um alvo por alguns minutos, podem replicar sua aparência e habilidades perfeitamente, a depender da raça-alvo você recebe um talento ou característica hereditária depois de 1 rodada analisando',
+            'Língua Predatória': 'Sua língua bifurcada pode se estender até 2 metros e agarrar pequenos objetos ou imobilizar alvos frágeis por um turno.',
+            'Grito Supersônico': 'Soltam um rugido em alta frequência que desorienta inimigos em um raio de 5 metros, impondo penalidade em testes de percepção e ataque por 1 rodada.',
+            'Sangue Venenoso': 'Se forem feridos em combate corpo a corpo, o agressor sofre 1d8 de dano ácido como reação.',
+            'Glândulas Regenerativas': 'Podem regenerar ferimentos rapidamente, restaurando 1d10 de Vida por uma quantidade de rodadas igual a seu Corpo.',
+            'Vulnerabilidade ao Fogo': 'Seus corpos são altamente sensíveis a queimaduras. Dano por fogo e calor intenso é dobrado contra eles.',
+            'Predadores Solitários': 'Zal\'kha não confiam facilmente e possuem dificuldade em trabalho em equipe, sofrendo -2 em testes sociais que exijam cooperação.',
+            'Ecos da Mudança': 'Seu corpo periodicamente se renova, trocando de pele. Durante esse processo, ficam extremamente vulneráveis por algumas horas.',
+            'Metabolismo Instável': 'Devido às suas mutações, precisam consumir mais alimento do que o normal. Se passarem muito tempo sem comer, sofrem penalidade em testes físicos.',
+            'Faro da Presa': 'São caçadores naturais, mas também possuem instintos que os forçam a reagir agressivamente quando sentem o cheiro de sangue. Precisam fazer um teste de Mente (D.A base 8) para resistir a atacar alvos feridos.',
+            'Golpe da Dívida Impagável': 'Se o inimigo possui qualquer pacto, maldição ou vínculo mágico, seus ataques contra ele causam +1d8 de dano adicional.',
+            'Olhar da Última Noite': 'Ao derrotar um inimigo, você pode perguntar ao Mestre qual foi o último arrependimento ou dívida não paga dessa criatura.',
+            'Garras de Execução (Abutre)': 'Enquanto na forma de abutre, seus ataques com garras causam 1d8 + Força, e podem causar sangramento (1d4/rodada) se o inimigo falhar num teste de Corpo.',
+            'Correntes Invisíveis': 'Você pode criar laços espirituais invisíveis. Uma vez por cena, escolha uma criatura até 5m: Ela está “atada” a você: sofre -1 em testes contra você. Se tentar fugir, sofre 1d6 de dano por esforço.',
+            'Reforçar o Pacto': 'Uma vez por cena, você pode invocar fragmentos da vontade demoníaca que te mantém de pé. Você rola com vantagem para intimidar, coagir ou ameaçar alguém que tema forças do além.',
+            'Rastro Espiritual': 'Rastreia locais, pessoas ou itens que envolvam mentiras, traições ou rompimentos mágicos, mesmo com falsificação ou ilusões.',
+            'Fobia Solar': 'Mesmo em forma de abutre, a luz solar causa desconforto profundo. Você sofre -4 em Mente e testes de resistência enquanto estiver sob luz direta.',
+            'Não é bem vindo': 'Você não é aceito na maioria dos lugares em que entrar, você apenas pode entrar em lugares em que não há proteções, além disso você sofre - 5 em testes sociais',
+            'Fragmentos da Outra Vida': 'Você recebe flashes aleatórios de sua vida anterior. Em cenas tensas, role 1d6. Em 1, você se distrai com a memória, sofrendo -2 no próximo teste.',
+            'Voz da Morte': 'Sua voz soa como várias sobrepostas, como se fosse um eco entre mundos. Sempre que fala em voz alta, impõe medo ou desconforto (reação social negativa, a critério do mestre).',
+            'Contrato Infame': 'Alguém no mundo sabe que você existe e quer te destruir ou controlar. Essa pessoa (ou entidade) tem influência oculta e pode interferir em momentos críticos (a critério do mestre).',
+            'Rachaduras do Véu': 'Você é uma falha na realidade. Magias de cura funcionam apenas com metade da eficácia em você.',
+            'Salto no Tempo (1 uso por cena)': 'Os Crônidas podem atrasar ou adiantar sua ação em um turno de combate, agindo antes ou depois de qualquer personagem na ordem da iniciativa.',
+            'Passo Fora do Tempo (1 uso por cena)': 'Pode se tornar intangível por 1 rodada, evitando ataques físicos e mágicos enquanto sua consciência desliza entre os instantes. Após usar essa habilidade, sofre -2 em Reflexos até o final da cena.',
+            'Memória Perfeita': 'O Crônidas nunca esquece nada. Pode lembrar-se de detalhes precisos de qualquer cena que já viveu, incluindo diálogos e ações. (Uso ilimitado, mas sujeito à interpretação do Mestre.)',
+            'Reversão Instantânea (1 uso por cena)': 'Pode desfazer a última ação realizada (dele ou de um aliado), mas sofre -2 em todos os testes na rodada seguinte devido ao desgaste temporal.',
+            'Intuição Futura (passiva, mas só funciona 1 vez por cena)': 'Se estiver prestes a cair em uma armadilha ou perigo inesperado, o Cronidas recebe um pressentimento e pode fazer um teste de Mente para evitar a situação antes que aconteça.',
+            'Corpo Preso no Presente': 'Sempre que usa uma habilidade temporal, seu corpo fica imóvel e vulnerável a ataques físicos.',
+            'Fluxo Inconstante': 'Se usar mais de 2 habilidades temporais na mesma cena, sofre 1d4 de dano devido ao desgaste mental.',
+            'Ecos Perdidos': 'Às vezes, o Crônidas não retorna sozinho... criaturas ou memórias do passado/futuro podem persegui-lo, causando penalidades (-2) em testes sociais ou mentais em momentos de tensão.',
+            'Paradoxo Crescente': 'Se interferir diretamente em eventos que já vivenciou, pode sofrer um efeito imprevisto, como uma falha automática no próximo teste de Alma. (Cabe ao Mestre definir o impacto dessa interferência.)',
+            'Distorção da Realidade': 'Pessoas comuns tendem a desconfiar ou sentir medo dos Cronidas. Sofrem -4 em testes sociais com NPCs que não conhecem sua verdadeira natureza.',
+            'Mentor do Pacto': 'Você é capaz de compartilhar o bônus de uma perícia sua com um aliado de juramento caso ele não possua essa perícia',
+            'Língua de Elfo': '+2 em testes de Persuasão e Manipulação com qualquer criatura além de conseguir se comunicar em dialetos antigos inerentes ao seu.',
+            'Sombras Silenciosas': 'Pode se mover sem ser detectado em qualquer escuridão (mágica ou não) por 1 rodada, 1x por cena.',
+            'Veneno Cultural': 'Pode aplicar veneno em armas com uma ação de movimento. O primeiro ataque causa +1d6 de dano e -1 em testes do alvo.',
+            'Olho do Traidor': 'Uma vez por cena, pode detectar se um aliado está escondendo intenções contrárias a você ou ao seu grupo.',
+            'Maldito Pela Luz': 'Em luz solar direta, sofre -1 em todos os testes de Mente e Alma, “mas porque?”.',
+            'Rancor Ancestral': 'Sofre -2 em testes sociais com Elfos de outras linhagens. Eles o sentem como uma aberração, “existem outros de nós?”.',
+            'Vínculo Obsessivo': 'Se o aliado pactuado for ferido ou desonrado, o Elfo Negro sofre -4 em todos os testes até confrontar a causa disso.',
+            'Eco da Promessa Quebrada': 'Sempre que um pacto for rompido, o Elfo tem pesadelos recorrentes. Sofre -5 em Percepção no dia seguinte.',
+            'Sombra do Passado': 'Um antigo pacto selado no passado volta a assombrar o Elfo — com um NPC, entidade ou mestre do mundo que deseja cobrá-lo, “eu não lembro de você”.'
+        };
+
+
         const rollDiceExpression = (expression) => {
             if (!expression) return { total: 0, rolls: [], modifier: 0 };
             const parts = expression.split('+');
@@ -733,7 +932,7 @@
         const RACES = {
             "Humano": "Versáteis e adaptáveis, os humanos compensam a ausência de talentos sobrenaturais com inteligência, força de vontade e iniciativa. Ganham bônus em perícias ou talentos à escolha.",
             "Vampiro": "Criaturas amaldiçoadas pela sede de sangue. Possuem regeneração sobrenatural, charme hipnótico e resistência à dor, mas são vulneráveis à luz e fogo.",
-            "Dampiro": "Nascidos da união entre humanos e vampiros, equilibram força sobrenatural com controle emocional. São ágiles e intuitivos, mas carregam instabilidade interior.",
+            "Dampiro": "Nascidos da união entre humanos e vampiros, equilibram força sobrenatural com controle emocional. São ágeis e intuitivos, mas carregam instabilidade interior.",
             "Licantropo": "Bestiais e poderosos, licantropos alternam entre forma humana e lupina. Recebem bônus em combate físico e sentidos aguçados, mas lutam contra a fúria interior.",
             "Meio-Demônio": "Marcados pelo inferno, possuem aparência distorcida e poderes elementais sombrios. Carregam o estigma do caos, mas também uma força aterradora.",
             "Meio-Celestial": "Filhos de entidades divinas. Possuem aura sagrada, talentos de cura e proteção, mas vivem sob constante julgamento moral e pressão ética.",
@@ -1010,11 +1209,19 @@
             }
         }
         
+        // Modificado para incluir o botão de olho
         function createChoiceHTML(list, title, max, type) {
             let content = `<div data-type="${type}"><h3 class="font-runic text-xl text-yellow-300 mb-2">${title}</h3><div class="grid grid-cols-2 md:grid-cols-3 gap-2" data-max="${max}">`;
             list.forEach(item => {
                 const choiceId = `choice-${type}-${item.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
-                content += `<div class="flex items-center gap-2 choice-box p-2 rounded"><input type="checkbox" id="${choiceId}" data-name="${item}" class="choice-checkbox form-checkbox h-5 w-5 rounded"><label for="${choiceId}">${item}</label></div>`;
+                content += `
+                    <div class="flex items-center gap-2 choice-box p-2 rounded">
+                        <input type="checkbox" id="${choiceId}" data-name="${item}" class="choice-checkbox form-checkbox h-5 w-5 rounded">
+                        <label for="${choiceId}" class="flex-1">${item}</label>
+                        <button type="button" class="info-eye-button" data-description-key="${item}" title="Ver Descrição">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>`;
             });
             content += '</div></div>';
             return content;
@@ -1030,10 +1237,23 @@
         function setupVampireChoices(raceData) {
             const { talents, maculas } = raceData;
             let maculaHTML = `<div data-type="macula"><h3 class="font-runic text-xl text-yellow-300 mb-2">Escolha 1 Mácula Adicional</h3><div class="grid grid-cols-2 md:grid-cols-3 gap-2" data-max="2">`;
-            maculaHTML += `<div class="flex items-center gap-2 choice-box p-2 rounded bg-blue-900/50"><input type="checkbox" data-name="Sede de Sangue (Hereditária)" checked disabled class="form-checkbox"><label>Sede de Sangue (Hereditária)</label></div>`;
+            maculaHTML += `<div class="flex items-center gap-2 choice-box p-2 rounded bg-blue-900/50">
+                                <input type="checkbox" data-name="Sede de Sangue (Hereditária)" checked disabled class="form-checkbox">
+                                <label>Sede de Sangue (Hereditária)</label>
+                                <button type="button" class="info-eye-button" data-description-key="Sede de Sangue (Hereditária)" title="Ver Descrição">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>`;
             maculas.forEach(item => {
                 const choiceId = `choice-macula-${item.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
-                maculaHTML += `<div class="flex items-center gap-2 choice-box p-2 rounded"><input type="checkbox" id="${choiceId}" data-name="${item}" class="choice-checkbox form-checkbox h-5 w-5 rounded"><label for="${choiceId}">${item}</label></div>`;
+                maculaHTML += `
+                    <div class="flex items-center gap-2 choice-box p-2 rounded">
+                        <input type="checkbox" id="${choiceId}" data-name="${item}" class="choice-checkbox form-checkbox h-5 w-5 rounded">
+                        <label for="${choiceId}">${item}</label>
+                        <button type="button" class="info-eye-button" data-description-key="${item}" title="Ver Descrição">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>`;
             });
                maculaHTML += `</div></div>`;
 
@@ -1101,7 +1321,8 @@
                 maculasDone = selectedMaculas.length === choiceLogic.maculas;
             } else if (choiceLogic.type === 'vampire') {
                 talentsDone = selectedTalents.length === 2;
-                maculasDone = selectedMaculas.length === 2; // 1 default + 1 escolhida
+                // For vampire, one macula is pre-selected, so check for 1 additional selected
+                maculasDone = selectedMaculas.length === 1 && container.querySelector('[data-name="Sede de Sangue (Hereditária)"]').checked; // Ensure the default is still checked
             } else if (choiceLogic.type === 'dampiro') {
                 const isHybrid = getEl('dampiro-hybrid-choices') && !getEl('dampiro-hybrid-choices').classList.contains('hidden');
                 talentsDone = selectedTalents.length === (isHybrid ? 2 : 2); // Dampiro always picks 2 talents, hybrid or not
@@ -1684,6 +1905,28 @@
             const options = { margin: 0.5, filename: `${charName.replace(/\s+/g, '_').toLowerCase()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0D1B2A' }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
             html2pdf().from(sheet).set(options).save();
            }
+
+        // --- Event Listener para o botão do olho ---
+        raceChoicesContainer.addEventListener('click', (e) => {
+            const infoButton = e.target.closest('.info-eye-button');
+            if (infoButton) {
+                const descriptionKey = infoButton.dataset.descriptionKey;
+                const description = TALENT_MACULA_DESCRIPTIONS[descriptionKey];
+
+                if (description) {
+                    descriptionModalTitle.textContent = descriptionKey;
+                    descriptionModalContent.textContent = description;
+                    descriptionModal.classList.remove('hidden');
+                } else {
+                    displayMessageBox(`Descrição para "${descriptionKey}" não encontrada.`);
+                }
+            }
+        });
+
+        // --- Event Listener para fechar o modal de descrição ---
+        closeDescriptionModalBtn.addEventListener('click', () => {
+            descriptionModal.classList.add('hidden');
+        });
 
         // --- EVENT LISTENERS ---
         getEl('avatar-upload').addEventListener('change', (event) => {
