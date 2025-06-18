@@ -1365,7 +1365,7 @@
             getEl('dracma-b').value = b; getEl('dracma-p').value = p;
             getEl('dracma-o').value = o; getEl('dracma-d').value = d;
             
-            const totalBronze = b + (p * 10) + (o * 100) + (d * 10000);
+            const totalBronze = b + (p * 100) + (o * 100) + (d * 10000);
             getEl('dracma-details').innerHTML = `
                 <p>♦️ ${d} (equivale a ${d*100} 🪙)</p>
                 <p>🪙 ${o} (equivale a ${o*10} 🥈)</p>
